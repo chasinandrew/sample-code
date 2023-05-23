@@ -2,61 +2,67 @@ name: Build and Deploy to Cloud Run
 on:
   push:
     branches:
-      - 'develop'
-      - 'qa'
-      - 'main'
-
-env: 
-  CODE_DIRECTORY: ./code/Samples.Run.MarkdownPreview.Editor
-  REGION: us-east4
+    - feature/cicd
+    - 'develop'
+    - 'qa'
+    - 'main'
 
 jobs: 
   #TODO: add feature branch unit tests
   #TODO: add vulnerability scanning
 
   #DEV
-  run_if: 
-    if: startsWith(github.head_ref, 'develop')
+  dev:
+    if: contains(github.ref_name, 'feature/cicd')
     uses: ./.github/workflows/deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
     with: 
       environment: dev
-      ref: ${{ github.ref }}
-      gcp_project_id: test
+      ref: ${{ github.sha }}
+      gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: ${{ env.REGION }}
+      artifact_registry_location: us-east4
       docker_image_name: pods
       service_name: pods
-      code_directory: ${{ env.CODE_DIRECTORY }}
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #QA
-  run_if: 
+  qa:
     if: startsWith(github.head_ref, 'qa')
     uses: ./.github/workflows/deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
     with: 
       environment: qa
       ref: ${{ github.ref }}
       gcp_project_id: test
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: ${{ env.REGION }}
+      artifact_registry_location: us-east4
       docker_image_name: pods
       service_name: pods
-      code_directory: ${{ env.CODE_DIRECTORY }}
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #PROD
-  run_if: 
+  prod: 
     if: startsWith(github.head_ref, 'main')
     uses: ./.github/workflows/deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
     with: 
       environment: prod
       ref: ${{ github.ref }}
       gcp_project_id: test
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: ${{ env.REGION }}
+      artifact_registry_location: us-east4
       docker_image_name: pods
       service_name: pods
-      code_directory: ${{ env.CODE_DIRECTORY }}
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
 
 # env:
