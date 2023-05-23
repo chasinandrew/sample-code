@@ -18,14 +18,22 @@ on:
         type: string
         required: true
         description: The Google Cloud project ID.
-      image_repository:
+      artifact_registry_repo:
         type: string
         required: true
-        description: The container image repository name.
-      image_name:
+        description: The artifact registry repository name.
+      artifact_registry_location:
+        type: string
+        required: true
+        description: The artifact registry region name.
+      docker_image_name:
         type: string
         required: true
         description: The container image name.
+      service_name:
+        type: string
+        required: true
+        description: The container service name.
 jobs:
   cloud-run: 
     name: "Cloud Run Deployment"
