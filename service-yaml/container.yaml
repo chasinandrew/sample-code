@@ -27,7 +27,7 @@ spec:
       serviceAccountName: ${CLOUD_RUN_SA}
       containers:
       - image: ${CONTAINER_IMAGE}
-        name: ${CONTAINER_SERVICE}
+        name: ${SERVICE_NAME}
         ports: 
         - name: http1
           containerPort: 8080
