@@ -29,6 +29,8 @@ jobs:
   #QA
   qa:
     if: startsWith(github.head_ref, 'qa')
+    permissions:
+      id-token: write
     uses: ./.github/workflows/deployment.yaml
     with: 
       environment: qa
