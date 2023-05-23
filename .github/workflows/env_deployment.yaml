@@ -2,9 +2,10 @@ name: Build and Deploy to Cloud Run
 on:
   push:
     branches:
-      - 'develop'
-      - 'qa'
-      - 'main'
+    - feature/cicd
+      # - 'develop'
+      # - 'qa'
+      # - 'main'
 
 env: 
   CODE_DIRECTORY: ./code/Samples.Run.MarkdownPreview.Editor
@@ -16,7 +17,7 @@ jobs:
 
   #DEV
   run_if: 
-    if: startsWith(github.head_ref, 'develop')
+    if: startsWith(github.head_ref, 'feature/cicd')
     uses: ./.github/workflows/deployment.yaml
     with: 
       environment: dev
