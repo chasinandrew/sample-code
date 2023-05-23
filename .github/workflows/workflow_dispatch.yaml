@@ -17,7 +17,7 @@ env:
 jobs: 
   dev: 
     if: ${{ github.event.inputs.environment == 'dev' }}
-    uses: ./github/workflows/deployment.yaml
+    uses: ./.github/workflows/deployment.yaml
     with: 
       environment: ${{ github.event.inputs.environment }}
       ref: ${{ github.ref }}
