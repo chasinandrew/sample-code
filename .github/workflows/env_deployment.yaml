@@ -16,7 +16,7 @@ jobs:
   #TODO: add vulnerability scanning
 
   #DEV
-  run_if: 
+  dev:
     if: startsWith(github.head_ref, 'feature/cicd')
     uses: ./.github/workflows/deployment.yaml
     with: 
@@ -31,7 +31,7 @@ jobs:
     secrets: inherit
   
   #QA
-  run_if: 
+  qa:
     if: startsWith(github.head_ref, 'qa')
     uses: ./.github/workflows/deployment.yaml
     with: 
@@ -46,7 +46,7 @@ jobs:
     secrets: inherit
   
   #PROD
-  run_if: 
+  prod: 
     if: startsWith(github.head_ref, 'main')
     uses: ./.github/workflows/deployment.yaml
     with: 
