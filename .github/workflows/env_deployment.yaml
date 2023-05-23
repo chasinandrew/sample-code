@@ -1,0 +1,76 @@
+name: Build and Deploy to Cloud Run
+on:
+  push:
+    branches:
+    - 'feature/**'
+    - 'develop'
+    - 'qa'
+    - 'main'
+
+jobs: 
+  #TODO: add feature branch unit tests
+  #TODO: add vulnerability scanning
+
+  #DEV
+  dev:
+    if: startsWith(github.ref_name, 'develop')
+    uses: ./.github/workflows/deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: dev
+      ref: ${{ github.sha }}
+      gcp_project_id: arched-inkwell-368821
+      artifact_registry_repo: reference-architectures
+      artifact_registry_location: us-east4
+      docker_image_name: pods
+      service_name: pods
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+    secrets: inherit
+  
+  #QA
+  qa:
+    if: startsWith(github.ref_name, 'qa')
+    uses: ./.github/workflows/deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: qa
+      ref: ${{ github.sha }}
+      gcp_project_id: arched-inkwell-368821
+      artifact_registry_repo: reference-architectures
+      artifact_registry_location: us-east4
+      docker_image_name: pods
+      service_name: pods
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+    secrets: inherit
+  
+  #PROD
+  prod: 
+    if: startsWith(github.ref_name, 'main')
+    uses: ./.github/workflows/deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: prod
+      ref: ${{ github.sha }}
+      gcp_project_id: arched-inkwell-368821
+      artifact_registry_repo: reference-architectures
+      artifact_registry_location: us-east4
+      docker_image_name: pods
+      service_name: pods
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+    secrets: inherit
+
+# env:
+#   PROJECT_ID: arched-inkwell-368821                             # TODO: update Google Cloud project id
+#   GAR_LOCATION: us-east4                                        # TODO: update Artifact Registry location
+#   REPOSITORY: reference-architectures                           # TODO: update Artifact Registry repository name
+#   CONTAINER_SERVICE: pods                                       # TODO: update Cloud Run service name
+#   REGION: us-east4                                              # TODO: update Cloud Run service region #
+#   IMAGE_TAG: latest
+#   WORKING_DIRECTORY: ./terraform
+#   CLOUD_RUN_SA: cloud-run-sa
