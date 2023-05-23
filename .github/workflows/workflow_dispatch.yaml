@@ -26,6 +26,7 @@ jobs:
       artifact_registry_location: us-east4
       docker_image_name: pods
       service_name: pods
+    secrets: inherit
 
 # env:
 #   PROJECT_ID: arched-inkwell-368821                             # TODO: update Google Cloud project id
