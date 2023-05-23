@@ -13,7 +13,7 @@ jobs:
 
   #DEV
   dev:
-    if: contains(github.ref_name, 'feature/cicd')
+    if: contains(github.ref_name, 'develop')
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
@@ -39,7 +39,7 @@ jobs:
     with: 
       environment: qa
       ref: ${{ github.ref }}
-      gcp_project_id: test
+      gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
       artifact_registry_location: us-east4
       docker_image_name: pods
@@ -57,7 +57,7 @@ jobs:
     with: 
       environment: prod
       ref: ${{ github.ref }}
-      gcp_project_id: test
+      gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
       artifact_registry_location: us-east4
       docker_image_name: pods
