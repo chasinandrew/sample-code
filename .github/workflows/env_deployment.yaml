@@ -7,10 +7,6 @@ on:
       # - 'qa'
       # - 'main'
 
-env: 
-  CODE_DIRECTORY: ./code/Samples.Run.MarkdownPreview.Editor
-  REGION: us-east4
-
 jobs: 
   #TODO: add feature branch unit tests
   #TODO: add vulnerability scanning
@@ -24,10 +20,10 @@ jobs:
       ref: ${{ github.ref }}
       gcp_project_id: test
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: ${{ env.REGION }}
+      artifact_registry_location: us-east4
       docker_image_name: pods
       service_name: pods
-      code_directory: ${{ env.CODE_DIRECTORY }}
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #QA
@@ -39,10 +35,10 @@ jobs:
       ref: ${{ github.ref }}
       gcp_project_id: test
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: ${{ env.REGION }}
+      artifact_registry_location: us-east4
       docker_image_name: pods
       service_name: pods
-      code_directory: ${{ env.CODE_DIRECTORY }}
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #PROD
@@ -54,10 +50,10 @@ jobs:
       ref: ${{ github.ref }}
       gcp_project_id: test
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: ${{ env.REGION }}
+      artifact_registry_location: us-east4
       docker_image_name: pods
       service_name: pods
-      code_directory: ${{ env.CODE_DIRECTORY }}
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
 
 # env:
