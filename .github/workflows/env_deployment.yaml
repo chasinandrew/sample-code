@@ -17,6 +17,7 @@ jobs:
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
+      contents: read
     with: 
       environment: dev
       ref: ${{ github.ref }}
