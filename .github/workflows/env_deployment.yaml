@@ -13,7 +13,7 @@ jobs:
 
   #DEV
   dev:
-    if: contains(github.head_ref, 'feature/cicd')
+    if: contains(github.ref_name, 'feature/cicd')
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
