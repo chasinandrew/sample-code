@@ -20,7 +20,7 @@ jobs:
       contents: read
     with: 
       environment: dev
-      ref: ${{ github.ref }}
+      ref: ${{ github.sha }}
       gcp_project_id: test
       artifact_registry_repo: reference-architectures
       artifact_registry_location: us-east4
