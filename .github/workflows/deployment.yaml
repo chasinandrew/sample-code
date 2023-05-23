@@ -30,7 +30,6 @@ jobs:
   cloud-run: 
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
-    needs: [terraform]
     permissions:
       pull-requests: write
       id-token: write
