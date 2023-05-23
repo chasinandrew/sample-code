@@ -34,10 +34,16 @@ on:
         type: string
         required: true
         description: The container service name.
+      code_directory: 
+        type: string
+        required: true
+        description: The directory where the source code lives. 
+
 jobs:
   cloud-run: 
-    name: "Cloud Run Deployment"
+    name: "Image Build & Cloud Run Deploy"
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
@@ -60,30 +66,29 @@ jobs:
         with:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
-          registry: '${{ env.GAR_LOCATION }}-docker.pkg.dev'
+          registry: '${{ inputs.artifact_registry_location }}-docker.pkg.dev'
 
       - name: Build and Tag
         id: build-image
         uses: docker/build-push-action@v3
         with:
-          context: ${{ env.CONTAINER_DIRECTORY }}
+          context: ${{ inputs.code_directory }}
           push: true 
-          tags: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.CONTAINER_SERVICE }}:${{ env.IMAGE_TAG }}
+          tags: ${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
       
       - name: Docker Push
         run: |-
-          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.CONTAINER_SERVICE }}:${{ env.IMAGE_TAG }}"
+          docker push "${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
 
       - name: Create Service declaration   
         run: |-
-          export CONTAINER_IMAGE="${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.CONTAINER_SERVICE }}:${{ env.IMAGE_TAG }}"
-          export CONTAINER_SERVICE="${{ env.CONTAINER_SERVICE }}"
-          export PROJECT_ID="${{ env.PROJECT_ID }}"
-          export REVISION_TAG=${{ github.sha }}
-          export CLOUD_RUN_SA=${{ env.CLOUD_RUN_SA }}
+          export CONTAINER_IMAGE="${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          export SERVICE_NAME="${{ inputs.service_name }}"
+          export PROJECT_ID="${{ inputs.gcp_project_id }}"
+          export REVISION_TAG=${{ inputs.ref }}
+          export CLOUD_RUN_SA=${{ inputs.cloud_run_sa }}
           envsubst < ./service-yaml/container.yaml > container.yaml
         
       - name: Deploy to Cloud Run
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |- 
-          gcloud run services replace container.yaml --region=${{ env.REGION }}
+          gcloud run services replace container.yaml --region=${{ inputs.artifact_registry_location }}

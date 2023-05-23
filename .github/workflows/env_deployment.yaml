@@ -1,0 +1,70 @@
+name: Build and Deploy to Cloud Run
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'qa'
+      - 'main'
+
+env: 
+  CODE_DIRECTORY: ./code/Samples.Run.MarkdownPreview.Editor
+  REGION: us-east4
+
+jobs: 
+  #TODO: add feature branch unit tests
+  #TODO: add vulnerability scanning
+
+  #DEV
+  run_if: 
+    if: startsWith(github.head_ref, 'develop')
+    uses: ./.github/workflows/deployment.yaml
+    with: 
+      environment: dev
+      ref: ${{ github.ref }}
+      gcp_project_id: test
+      artifact_registry_repo: reference-architectures
+      artifact_registry_location: ${{ env.REGION }}
+      docker_image_name: pods
+      service_name: pods
+      code_directory: ${{ env.CODE_DIRECTORY }}
+    secrets: inherit
+  
+  #QA
+  run_if: 
+    if: startsWith(github.head_ref, 'qa')
+    uses: ./.github/workflows/deployment.yaml
+    with: 
+      environment: qa
+      ref: ${{ github.ref }}
+      gcp_project_id: test
+      artifact_registry_repo: reference-architectures
+      artifact_registry_location: ${{ env.REGION }}
+      docker_image_name: pods
+      service_name: pods
+      code_directory: ${{ env.CODE_DIRECTORY }}
+    secrets: inherit
+  
+  #PROD
+  run_if: 
+    if: startsWith(github.head_ref, 'main')
+    uses: ./.github/workflows/deployment.yaml
+    with: 
+      environment: prod
+      ref: ${{ github.ref }}
+      gcp_project_id: test
+      artifact_registry_repo: reference-architectures
+      artifact_registry_location: ${{ env.REGION }}
+      docker_image_name: pods
+      service_name: pods
+      code_directory: ${{ env.CODE_DIRECTORY }}
+    secrets: inherit
+
+# env:
+#   PROJECT_ID: arched-inkwell-368821                             # TODO: update Google Cloud project id
+#   GAR_LOCATION: us-east4                                        # TODO: update Artifact Registry location
+#   REPOSITORY: reference-architectures                           # TODO: update Artifact Registry repository name
+#   CONTAINER_SERVICE: pods                                       # TODO: update Cloud Run service name
+#   REGION: us-east4                                              # TODO: update Cloud Run service region #
+#   IMAGE_TAG: latest
+#   WORKING_DIRECTORY: ./terraform
+#   CLOUD_RUN_SA: cloud-run-sa
