@@ -4,11 +4,11 @@ metadata:
   annotations: 
     run.googleapis.com/launch-stage: ALPHA
     run.googleapis.com/ingress: internal-and-cloud-load-balancing 
-  name: ${CONTAINER_SERVICE}
+  name: ${SERVICE_NAME}
 spec:
   template:
     metadata:      
-      name: ${CONTAINER_SERVICE}-${REVISION_TAG} 
+      name: ${SERVICE_NAME}-${REVISION_TAG} 
       annotations:
         run.googleapis.com/execution-environment: gen1
         autoscaling.knative.dev/minScale: '3'
@@ -38,11 +38,11 @@ spec:
           value: sqluser #TODO: change to true database username 
         - name: DB_NAME 
           value: default #TODO: change to true database name 
-        - name: DB_PASS
-          valueFrom:
-            secretKeyRef:
-              name: TEST #TODO: change to true secret name 
-              key: "3" #TODO: change to true secret key
+        # - name: DB_PASS
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: TEST #TODO: change to true secret name 
+        #       key: "3" #TODO: change to true secret key
 
       # It is recommended to use the latest version of the Cloud SQL Auth Proxy
       # Make sure to update on a regular schedule!
