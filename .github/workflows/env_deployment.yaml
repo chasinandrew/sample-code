@@ -15,6 +15,8 @@ jobs:
   dev:
     if: startsWith(github.head_ref, 'feature/cicd')
     uses: ./.github/workflows/deployment.yaml
+    permissions: 
+      id-token: write
     with: 
       environment: dev
       ref: ${{ github.ref }}
@@ -29,8 +31,6 @@ jobs:
   #QA
   qa:
     if: startsWith(github.head_ref, 'qa')
-    permissions:
-      id-token: write
     uses: ./.github/workflows/deployment.yaml
     with: 
       environment: qa
