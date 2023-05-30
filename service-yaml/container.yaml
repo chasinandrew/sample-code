@@ -37,7 +37,7 @@ spec:
         - name: DB_USER 
           value: sqluser #TODO: change to true database username 
         - name: DB_NAME 
-          value: default #TODO: change to true database name 
+          value: mssql #TODO: change to true database name 
         - name: DB_PASS
           valueFrom:
             secretKeyRef:
@@ -54,7 +54,7 @@ spec:
 
         # Replace DB_PORT with the port the proxy should listen on
         - "--port=1433"
-        - ${DATABASE} #"arched-inkwell-368821:us-east4:mssql" #TODO: replace with cloud sql in your project, change to secret 
+        - ${DATABASE}
         resources:
           limits:
             memory: "2Gi"
