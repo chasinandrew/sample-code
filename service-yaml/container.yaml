@@ -41,8 +41,8 @@ spec:
         - name: DB_PASS
           valueFrom:
             secretKeyRef:
-              name: TEST #TODO: change to true secret name 
-              key: "3" #TODO: change to true secret key
+              name: DB_PASS #TODO: change to true secret name 
+              key: "1" #TODO: change to true secret key
 
       # It is recommended to use the latest version of the Cloud SQL Auth Proxy
       # Make sure to update on a regular schedule!
