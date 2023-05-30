@@ -22,7 +22,7 @@ on:
         type: string
         required: true
         description: The artifact registry repository name.
-      artifact_registry_location:
+      region:
         type: string
         required: true
         description: The artifact registry region name.
@@ -66,7 +66,7 @@ jobs:
         with:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
-          registry: '${{ inputs.artifact_registry_location }}-docker.pkg.dev'
+          registry: '${{ inputs.region }}-docker.pkg.dev'
 
       - name: Build and Tag
         id: build-image
@@ -74,21 +74,22 @@ jobs:
         with:
           context: ${{ inputs.code_directory }}
           push: true 
-          tags: ${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
+          tags: ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
       
       - name: Docker Push
         run: |-
-          docker push "${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
 
       - name: Create Service declaration   
         run: |-
-          export CONTAINER_IMAGE="${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
           export SERVICE_NAME="${{ inputs.service_name }}"
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
-          export REVISION_TAG=${{ inputs.ref }}
-          export CLOUD_RUN_SA=${{ inputs.cloud_run_sa }}
+          export REVISION_TAG="${{ inputs.ref }}"
+          export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
+          export DATABASE="${{ secrets.database }}"
           envsubst < ./service-yaml/container.yaml > container.yaml
         
       - name: Deploy to Cloud Run
         run: |- 
-          gcloud run services replace container.yaml --region=${{ inputs.artifact_registry_location }}
+          gcloud run services replace container.yaml --region=${{ inputs.region }}
