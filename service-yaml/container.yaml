@@ -54,7 +54,7 @@ spec:
 
         # Replace DB_PORT with the port the proxy should listen on
         - "--port=1433"
-        - "arched-inkwell-368821:us-east4:mssql" #TODO: replace with cloud sql in your project, change to secret 
+        - ${DATABASE} #"arched-inkwell-368821:us-east4:mssql" #TODO: replace with cloud sql in your project, change to secret 
         resources:
           limits:
             memory: "2Gi"
