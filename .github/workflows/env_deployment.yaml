@@ -13,7 +13,7 @@ jobs:
 
   #DEV
   dev:
-    if: startsWith(github.ref_name, 'develop')
+    if: startsWith(github.ref_name, 'feature')
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write

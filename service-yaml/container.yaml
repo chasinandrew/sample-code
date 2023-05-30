@@ -59,6 +59,6 @@ spec:
           limits:
             memory: "2Gi"
             cpu:    "1"
-  traffic: #TODO: future improvement to have canary deployments 
+  traffic: 
   - percent: 100
     latestRevision: true
