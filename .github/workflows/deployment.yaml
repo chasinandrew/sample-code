@@ -38,6 +38,10 @@ on:
         type: string
         required: true
         description: The directory where the source code lives. 
+      cloud_run_sa: 
+        type: string
+        required: false
+        description: The directory where the source code lives. 
 
 jobs:
   cloud-run: 
