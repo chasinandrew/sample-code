@@ -57,7 +57,7 @@ jobs:
 
       - name: auth-login
         run: |-
-          gcloud auth login
+          gcloud auth login --no-browser
 
       # - name: Google Auth
       #   id: auth
