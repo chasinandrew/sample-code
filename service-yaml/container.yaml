@@ -11,7 +11,7 @@ spec:
       name: ${SERVICE_NAME}-${REVISION_TAG} 
       annotations:
         run.googleapis.com/execution-environment: gen1
-        run.googleapis.com/vpc-access-connector: projects/hca-itg-shared-networks/locations/us-east4/connectors/hca-vpc-conn
+        # run.googleapis.com/vpc-access-connector: projects/hca-itg-shared-networks/locations/us-east4/connectors/hca-vpc-conn
         autoscaling.knative.dev/minScale: '3'
         autoscaling.knative.dev/maxScale: '100'
       labels: #TODO: change all labels 
