@@ -49,9 +49,6 @@ spec:
       # Make sure to update on a regular schedule!
       - image: gcr.io/cloudsql-docker/gce-proxy:latest
         name: cloud-sql-proxy
-        args:
-        # Enable structured logging with LogEntry format:
-        - "--structured-logs"
         command:
           - "/cloud_sql_proxy"
 
