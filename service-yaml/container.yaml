@@ -30,7 +30,7 @@ spec:
         name: ${SERVICE_NAME}
         ports: 
         - name: http1
-          containerPort: 8080
+          containerPort: 80
         env:
         - name: PROJECT_ID
           value: ${PROJECT_ID}
