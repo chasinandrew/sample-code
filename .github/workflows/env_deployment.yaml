@@ -13,7 +13,7 @@ jobs:
 
   #DEV
   dev:
-    if: startsWith(github.ref_name, 'develop')
+    if: startsWith(github.ref_name, 'feature')
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
@@ -23,10 +23,11 @@ jobs:
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: us-east4
+      region: us-east4
       docker_image_name: pods
       service_name: pods
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+      cloud_run_sa: cloud-run-sa
     secrets: inherit
   
   #QA
@@ -41,7 +42,7 @@ jobs:
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: us-east4
+      region: us-east4
       docker_image_name: pods
       service_name: pods
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
@@ -59,18 +60,8 @@ jobs:
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
-      artifact_registry_location: us-east4
+      region: us-east4
       docker_image_name: pods
       service_name: pods
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
-
-# env:
-#   PROJECT_ID: arched-inkwell-368821                             # TODO: update Google Cloud project id
-#   GAR_LOCATION: us-east4                                        # TODO: update Artifact Registry location
-#   REPOSITORY: reference-architectures                           # TODO: update Artifact Registry repository name
-#   CONTAINER_SERVICE: pods                                       # TODO: update Cloud Run service name
-#   REGION: us-east4                                              # TODO: update Cloud Run service region #
-#   IMAGE_TAG: latest
-#   WORKING_DIRECTORY: ./terraform
-#   CLOUD_RUN_SA: cloud-run-sa
