@@ -15,7 +15,7 @@ spec:
         run.googleapis.com/vpc-access-connector: projects/arched-inkwell-368821/locations/us-east4/connectors/pods-2
         autoscaling.knative.dev/minScale: '3'
         autoscaling.knative.dev/maxScale: '100'
-      labels: #TODO: change all labels 
+      labels: #TODO: change all labels #
         region: us-east4
         app_code: test
         classification: test
