@@ -20,7 +20,6 @@ on:
 jobs: 
   #DEV
   dev:
-    if: startsWith(github.head_ref, 'feature') || startsWith(github.ref_name, 'feature')
     uses: ./.github/workflows/code_cicd.yaml
     permissions: 
       id-token: write
@@ -33,7 +32,7 @@ jobs:
       region: us-east4
       docker_image_name: pods
       service_name: hello 
-      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+      code_directory: ./code/hello-python
       cloud_run_sa: cloud-run-sa
     secrets: inherit
   
