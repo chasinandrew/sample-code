@@ -1,16 +1,6 @@
 name: CLOUD RUN WORKFLOW BUILD AND DEPLOY
 on:
   push:
-    paths: 
-    - 'code/**'
-    branches:
-    - 'feature/**'
-    - 'develop'
-    - 'qa'
-    - 'main'
-  pull_request:
-    paths: 
-    - 'code/**'
     branches:
     - 'feature/**'
     - 'develop'
@@ -20,7 +10,8 @@ on:
 jobs: 
   #DEV
   dev:
-    uses: ./.github/workflows/_code_envs.yaml
+    if: startsWith(github.ref_name, 'feature')
+    uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
       contents: read
@@ -31,8 +22,8 @@ jobs:
       artifact_registry_repo: reference-architectures
       region: us-east4
       docker_image_name: pods
-      service_name: hello 
-      code_directory: ./code/hello-python
+      service_name: pods
+      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
       cloud_run_sa: cloud-run-sa
     secrets: inherit
   
@@ -50,14 +41,14 @@ jobs:
       artifact_registry_repo: reference-architectures
       region: us-east4
       docker_image_name: pods
-      service_name: hello
+      service_name: pods
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #PROD
   prod: 
     if: startsWith(github.ref_name, 'main')
-    uses: ./.github/workflows/code_cicd.yaml
+    uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
       contents: read
