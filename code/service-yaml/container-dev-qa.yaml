@@ -36,10 +36,10 @@ spec:
         env:
         - name: PROJECT_ID
           value: ${PROJECT_ID}
-        - name: DB_USERNAME 
+        - name: DB_ROOT_USERNAME 
           valueFrom:
             secretKeyRef:
-              name: DB_USERNAME 
+              name: DB_ROOT_USERNAME 
               key: "1" 
         - name: DB_NAME 
           valueFrom:
@@ -51,10 +51,10 @@ spec:
             secretKeyRef:
               name: DB_CONNECTION_STRING 
               key: "1"
-        - name: DB_PASSWORD
+        - name: DB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: DB_PASSWORD  
+              name: DB_ROOT_PASSWORD  
               key: "1" 
         resources:
           limits:
