@@ -10,8 +10,7 @@ on:
 jobs: 
   #DEV
   dev:
-    if: startsWith(github.ref_name, 'feature')
-    uses: ./.github/workflows/deployment.yaml
+    uses: ./.github/workflows/_code_envs.yaml
     permissions: 
       id-token: write
       contents: read

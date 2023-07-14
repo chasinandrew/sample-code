@@ -104,12 +104,12 @@ jobs:
           echo "RELEASE_NAME=${{ env.APP }}-${GITHUB_SHA::7}-${GITHUB_RUN_NUMBER}" >> ${GITHUB_ENV}
 
 
-      - name: 'Create Cloud Deploy release'
-        uses: 'google-github-actions/create-cloud-deploy-release@v0'
-        with:
-          delivery_pipeline: '${{ env.APP }}'
-          name: '${{ env.RELEASE_NAME }}'
-          region: '${{ env.REGION }}'
-          description: '${{ env.GITHUB_COMMIT_MSG }}'
-          skaffold_file: 'config/skaffold.yaml'
-          images: 'app=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}'
+      # - name: 'Create Cloud Deploy release'
+      #   uses: 'google-github-actions/create-cloud-deploy-release@v0'
+      #   with:
+      #     delivery_pipeline: '${{ env.APP }}'
+      #     name: '${{ env.RELEASE_NAME }}'
+      #     region: '${{ env.REGION }}'
+      #     description: '${{ env.GITHUB_COMMIT_MSG }}'
+      #     skaffold_file: 'config/skaffold.yaml'
+      #     images: 'app=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}'
