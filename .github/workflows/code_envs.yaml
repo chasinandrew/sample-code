@@ -41,14 +41,14 @@ jobs:
       artifact_registry_repo: reference-architectures
       region: us-east4
       docker_image_name: pods
-      service_name: pods
+      service_name: hello
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #PROD
   prod: 
     if: startsWith(github.ref_name, 'main')
-    uses: ./.github/workflows/deployment.yaml
+    uses: ./.github/workflows/code_cicd.yaml
     permissions: 
       id-token: write
       contents: read
