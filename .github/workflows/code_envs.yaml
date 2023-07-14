@@ -20,7 +20,7 @@ on:
 jobs: 
   #DEV
   dev:
-    uses: ./.github/workflows/code_cicd.yaml
+    uses: ./.github/workflows/_code_envs.yaml
     permissions: 
       id-token: write
       contents: read
