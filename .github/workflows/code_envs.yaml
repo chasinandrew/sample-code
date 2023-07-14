@@ -1,6 +1,16 @@
-name: Build and Deploy to Cloud Run
+name: CLOUD RUN WORKFLOW BUILD AND DEPLOY
 on:
   push:
+    paths: 
+    - 'code/**'
+    branches:
+    - 'feature/**'
+    - 'develop'
+    - 'qa'
+    - 'main'
+  pull_request:
+    paths: 
+    - 'code/**'
     branches:
     - 'feature/**'
     - 'develop'
@@ -8,13 +18,10 @@ on:
     - 'main'
 
 jobs: 
-  #TODO: add feature branch unit tests
-  #TODO: add vulnerability scanning
-
   #DEV
   dev:
-    if: startsWith(github.ref_name, 'feature')
-    uses: ./.github/workflows/deployment.yaml
+    if: startsWith(github.head_ref, 'feature') || startsWith(github.ref_name, 'feature')
+    uses: ./.github/workflows/code_cicd.yaml
     permissions: 
       id-token: write
       contents: read
@@ -22,14 +29,10 @@ jobs:
       environment: dev
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
-      artifact_registry_repo: new
+      artifact_registry_repo: reference-architectures
       region: us-east4
       docker_image_name: pods
-<<<<<<< HEAD
-      service_name: pods
-=======
-      service_name: pods #
->>>>>>> parent of 1662a4f (add the code back)
+      service_name: hello 
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
       cloud_run_sa: cloud-run-sa
     secrets: inherit
@@ -37,7 +40,7 @@ jobs:
   #QA
   qa:
     if: startsWith(github.ref_name, 'qa')
-    uses: ./.github/workflows/deployment.yaml
+    uses: ./.github/workflows/code_cicd.yaml
     permissions: 
       id-token: write
       contents: read
@@ -48,14 +51,14 @@ jobs:
       artifact_registry_repo: reference-architectures
       region: us-east4
       docker_image_name: pods
-      service_name: pods
+      service_name: hello
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #PROD
   prod: 
     if: startsWith(github.ref_name, 'main')
-    uses: ./.github/workflows/deployment.yaml
+    uses: ./.github/workflows/code_cicd.yaml
     permissions: 
       id-token: write
       contents: read
@@ -66,6 +69,6 @@ jobs:
       artifact_registry_repo: reference-architectures
       region: us-east4
       docker_image_name: pods
-      service_name: pods
+      service_name: hello
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
