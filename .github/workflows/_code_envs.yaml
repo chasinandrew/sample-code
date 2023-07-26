@@ -146,4 +146,4 @@ jobs:
 
       - name: 'Create Cloud Deploy Release'
         run: |-
-          gcloud deploy releases create new-vibes --delivery-pipeline hello3 --skaffold-file skaffold-cache.template.yaml --region ${{ inputs.region }}
+          gcloud deploy releases create new-vibes --delivery-pipeline test --skaffold-file skaffold-cache.template.yaml --region ${{ inputs.region }}

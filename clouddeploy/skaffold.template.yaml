@@ -1,7 +1,7 @@
 apiVersion: skaffold/v3alpha1
 kind: Config
 metadata:
-  name: 'new-again'
+  name: 'skaffold'
 deploy:
   cloudrun: {}
 build:
