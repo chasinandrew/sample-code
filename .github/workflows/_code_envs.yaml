@@ -103,7 +103,6 @@ jobs:
           export REVISION_TAG="${{ inputs.ref }}"
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           export DATABASE="${{ secrets.database }}"
-          export REGION="us-east4"
           envsubst < ./clouddeploy/skaffold.template.yaml > skaffold.template.yaml
 
       - name: Create Service declaration PROD Skaffold
@@ -114,7 +113,6 @@ jobs:
           export REVISION_TAG="${{ inputs.ref }}"
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           export DATABASE="${{ secrets.database }}"
-          export REGION="us-east4"
           envsubst < ./clouddeploy/container-prod.yaml > container-prod.yaml
       # - name: Create Service declaration PROD
       #   run: |-
@@ -134,4 +132,4 @@ jobs:
 
       - name: 'Create Cloud Deploy delivery pipeline'
         run: |-
-          gcloud deploy apply --file config/clouddeploy.template.yaml --region ${REGION}    
+          gcloud deploy apply --file config/clouddeploy.template.yaml --region us-east4    
