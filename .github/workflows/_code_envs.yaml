@@ -41,7 +41,7 @@ on:
       cloud_run_sa: 
         type: string
         required: false
-        description: The directory where the source code lives. 
+        description: The directory where the source code lives.  
 
 jobs:
   cloud-run-dev: 
@@ -83,6 +83,12 @@ jobs:
       # - name: Docker Push
       #   run: |-
       #     docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+
+      - name: Create Service declaration DEV Manifest
+        run: |
+          export PROJECT_ID="${{ inputs.gcp_project_id }}"
+          export REGION="us-east4"
+          envsubst < ./clouddeploy/clouddeploy.template.yaml > clouddeploy.template.yaml.yaml
 
       - name: Create Service declaration DEV Manifest
         run: |-
