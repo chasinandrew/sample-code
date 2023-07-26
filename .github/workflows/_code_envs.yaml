@@ -132,10 +132,9 @@ jobs:
       #     export REGION="us-east4"
       #     envsubst < ./clouddeploy/container-dev-qa.yaml > container-prod.yaml
         
-      # - name: Deploy to Cloud Run
-      #   if: github.event_name == 'push'
-      #   run: |- 
-      #     gcloud run services replace container-dev-qa.yaml --region=${{ inputs.region }}
+      - name: Echo skaffold
+        run: |- 
+          echo skaffold-cache.template.yaml
 
       - name: 'Create Cloud Deploy delivery pipeline'
         run: |-
