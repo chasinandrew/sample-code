@@ -88,7 +88,7 @@ jobs:
         run: |
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
           export REGION="us-east4"
-          envsubst < ./clouddeploy/clouddeploy.template.yaml > ./clouddeploy/clouddeploy.template.yaml
+          envsubst < ./clouddeploy/clouddeploy.template.yaml > clouddeploy.template.yaml
 
       - name: Create Service declaration DEV Manifest
         run: |-
