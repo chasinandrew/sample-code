@@ -97,7 +97,7 @@ jobs:
 
       - name: Create Service declaration DEV Skaffold
         run: |-
-          export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          export CONTAINER_IMAGE="us-east4-docker.pkg.dev/arched-inkwell-368821/reference-architectures/pods:f9e23705dfdaaad88bacb1f8488b228fc0ad3dfd"
           export SERVICE_NAME="${{ inputs.service_name }}"
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
           export REVISION_TAG="${{ inputs.ref }}"
@@ -108,7 +108,7 @@ jobs:
 
       - name: Create Service declaration PROD Skaffold
         run: |-
-          export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          export CONTAINER_IMAGE="us-east4-docker.pkg.dev/arched-inkwell-368821/reference-architectures/pods:f9e23705dfdaaad88bacb1f8488b228fc0ad3dfd"
           export SERVICE_NAME="${{ inputs.service_name }}"
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
           export REVISION_TAG="${{ inputs.ref }}"
