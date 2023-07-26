@@ -40,7 +40,9 @@ public class Main implements HttpFunction {
 
   private Logger logger = Logger.getLogger(Main.class.getName());
   private static final Gson gson = new Gson();
-
+    public static void main(String[] args) {
+        System.out.println("Hello, world!");
+    }
   // Declared at cold-start, but only initialized if/when the function executes
   // Uses the "initialization-on-demand holder" idiom
   // More information: https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom

@@ -1,0 +1,44 @@
+# apiVersion: skaffold/v3alpha1
+# kind: Config
+# metadata:
+#   name: test-hello-world
+# build:
+#   tagPolicy:
+#     sha256: {}
+#   artifacts:
+#   - image: us-central1-docker.pkg.dev/core-stronghold-357120/core-stronghold-357120-app-image-repo/helloworld-cloudrunpipeline
+#     context: .
+#     buildpacks:
+#       builder: gcr.io/buildpacks/builder:v1
+# profiles:
+# - name: cloudbuild
+#   build:
+#     googleCloudBuild: {}
+# manifests:
+#   rawYaml:
+#   - service.yaml
+# deploy:
+#   cloudrun:
+#     region: us-central1 hhhh
+
+apiVersion: skaffold/v3alpha1
+kind: Config
+metadata:
+  name: 'app'
+deploy:
+  cloudrun: {}
+build:
+  tagPolicy:
+    sha256: {}
+  artifacts:
+  - image: ${CONTAINER_IMAGE}
+ # - image: "us-central1-docker.pkg.dev/core-stronghold-357120/helloworld-cloudrunpipeline/helloworld-cloudrunpipeline"
+profiles:
+  - name: 'dev'
+    manifests:
+      rawYaml:
+        - 'container-dev-qa.yaml'
+  - name: 'staging'
+    manifests:
+      rawYaml:
+        - 'container-prod.yaml'

@@ -7,6 +7,6 @@ RUN mvn -B package
 
 FROM openjdk:11-jdk-slim
 # WORKDIR /src/main/java/com/example/cloudsql
-COPY --from=builder target/cloudsql-1.0.jar /cloudsql/cloudsql-1.0.jar
+COPY --from=builder target/demo-1.0-SNAPSHOT.jar demo-1.0-SNAPSHOT.jar
 EXPOSE 8080
-CMD ["java", "-cp", "/cloudsql/cloudsql-1.0.jar", "com.example.cloudsql.functions.Main"]
+CMD ["java", "-cp", "demo-1.0-SNAPSHOT.jar", "hello.App"]
