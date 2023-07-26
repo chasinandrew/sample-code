@@ -120,6 +120,7 @@ jobs:
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           export DATABASE="${{ secrets.database }}"
           envsubst < ./clouddeploy/container-prod.yaml > container-prod-cache.yaml
+
       # - name: Create Service declaration PROD
       #   run: |-
       #     export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
@@ -139,3 +140,7 @@ jobs:
       - name: 'Create Cloud Deploy delivery pipeline'
         run: |-
           gcloud deploy apply --file clouddeploy-cache.template.yaml --region us-east4    
+
+      - name: 'Create Cloud Deploy Release'
+        run: |-
+          gcloud deploy releases create new-vibe --delivery-pipeline hello3 --skaffold-file skaffold-cache.template.yaml
