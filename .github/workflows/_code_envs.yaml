@@ -134,7 +134,7 @@ jobs:
         
       - name: Echo skaffold
         run: |- 
-          echo skaffold-cache.template.yaml
+          cat skaffold-cache.template.yaml
 
       - name: 'Create Cloud Deploy delivery pipeline'
         run: |-
