@@ -1,7 +1,7 @@
 apiVersion: deploy.cloud.google.com/v1
 kind: DeliveryPipeline
 metadata:
-  name: 'hello3'
+  name: 'test'
 description: 'Deployment pipeline for demo app'
 serialPipeline:
   stages:
@@ -13,7 +13,7 @@ serialPipeline:
 apiVersion: deploy.cloud.google.com/v1
 kind: Target
 metadata:
-  name: 'hello'
+  name: 'new-again'
 description: 'dev target'
 run:
   location: projects/${PROJECT_ID}/locations/${REGION}
