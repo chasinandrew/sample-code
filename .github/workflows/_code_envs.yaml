@@ -132,9 +132,13 @@ jobs:
       #     export REGION="us-east4"
       #     envsubst < ./clouddeploy/container-dev-qa.yaml > container-prod.yaml
         
-      - name: Echo skaffold
+      - name: cat skaffold
         run: |- 
           cat skaffold-cache.template.yaml
+
+      - name: cat manifest
+        run: |- 
+          cat container-prod-cache.yaml
 
       - name: 'Create Cloud Deploy delivery pipeline'
         run: |-
