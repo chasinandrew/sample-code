@@ -37,8 +37,8 @@ profiles:
   - name: 'dev'
     manifests:
       rawYaml:
-        - 'container-dev-qa.yaml'
+        - 'cache/container-dev-qa.yaml'
   - name: 'staging'
     manifests:
       rawYaml:
-        - 'container-prod.yaml'
+        - 'cache/container-prod.yaml'
