@@ -8,12 +8,9 @@ on:
     - 'main'
 
 jobs: 
-  #TODO: add feature branch unit tests
-  #TODO: add vulnerability scanning
-
   #DEV
   dev:
-    if: startsWith(github.ref_name, 'feature')
+    if: startsWith(github.ref_name, 'develop')
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
