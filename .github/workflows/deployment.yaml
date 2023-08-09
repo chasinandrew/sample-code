@@ -44,7 +44,7 @@ on:
         description: The directory where the source code lives. 
 
 jobs:
-  cloud-run: 
+  deploy: 
     name: "Image Build & Cloud Run Deploy"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -78,7 +78,9 @@ jobs:
         with:
           context: ${{ inputs.code_directory }}
           push: true 
-          tags: ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
+          tags: |
+            ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
+            ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest
       
       - name: Docker Push
         run: |-
@@ -92,8 +94,9 @@ jobs:
           export REVISION_TAG="${{ inputs.ref }}"
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           export DATABASE="${{ secrets.database }}"
-          envsubst < ./service-yaml/container.yaml > container.yaml
+          envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
       - name: Deploy to Cloud Run
+        if: ${{ inputs.environment }} == 'prod'
         run: |- 
-          gcloud run services replace container.yaml --region=${{ inputs.region }}
+          gcloud run services replace container-prod.yaml --region=${{ inputs.region }}

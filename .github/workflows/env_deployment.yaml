@@ -1,22 +1,27 @@
 name: Build and Deploy to Cloud Run
 on:
-  push:
-    branches:
-    - 'feature/**'
-    - 'develop'
-    - 'qa'
-    - 'main'
+  workflow_dispatch: 
+    inputs: 
+      environment: 
+        type: choice
+        required: true
+        default: "dev"
+        description: GitHub environment
+        options: 
+          - dev
+          - qa
+          - prod
 
 jobs: 
   #DEV
   dev:
-    if: startsWith(github.ref_name, 'develop')
+    if: ${{ github.event.inputs.environment == 'dev' }}
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
       contents: read
     with: 
-      environment: dev
+      environment: ${{ github.event.inputs.environment }}
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
@@ -29,13 +34,13 @@ jobs:
   
   #QA
   qa:
-    if: startsWith(github.ref_name, 'qa')
+    if: ${{ github.event.inputs.environment == 'qa' }}
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
       contents: read
     with: 
-      environment: qa
+      environment: ${{ github.event.inputs.environment }}
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
@@ -47,13 +52,13 @@ jobs:
   
   #PROD
   prod: 
-    if: startsWith(github.ref_name, 'main')
+    if: ${{ github.event.inputs.environment == 'prod' }}
     uses: ./.github/workflows/deployment.yaml
     permissions: 
       id-token: write
       contents: read
     with: 
-      environment: prod
+      environment: ${{ github.event.inputs.environment }}
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
