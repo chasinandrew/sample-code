@@ -26,10 +26,6 @@ on:
         type: string
         required: true
         description: The artifact registry region name.
-      docker_image_name:
-        type: string
-        required: true
-        description: The container image name.
       service_name:
         type: string
         required: true
@@ -85,6 +81,7 @@ jobs:
       - name: Docker Push
         run: |-
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
 
       - name: Create Service declaration   
         run: |-
@@ -93,7 +90,6 @@ jobs:
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
           export REVISION_TAG="${{ inputs.ref }}"
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
-          export DATABASE="${{ secrets.database }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
       - name: Deploy to Cloud Run
