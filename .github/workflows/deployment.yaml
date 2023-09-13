@@ -1,27 +1,29 @@
 name: Build and Deploy to Cloud Run
 on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
   workflow_dispatch: 
     inputs: 
       environment: 
         type: choice
         required: true
-        default: "dev"
+        default: "prod"
         description: GitHub Environment
         options: 
-          - dev
-          - qa
           - prod
 
 jobs: 
   #DEV
   dev:
-    if: ${{ github.event.inputs.environment == 'dev' }}
+    if: github.ref_name == 'develop'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
       contents: read
     with: 
-      environment: ${{ github.event.inputs.environment }}
+      environment: dev
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
