@@ -29,8 +29,8 @@ jobs:
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
       region: us-east4
-      service_name: pods
-      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+      service_name: scan-test
+      code_directory: ./code/hello-python
       cloud_run_sa: cloud-run-sa
     secrets: inherit
   

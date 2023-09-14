@@ -57,6 +57,7 @@ jobs:
     name: Scan
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
+    needs: [lint]
     permissions:
       actions: read
       contents: read
@@ -93,6 +94,7 @@ jobs:
     name: "Image Build & Cloud Run Deploy"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    needs: [lint, scan]
     permissions:
       id-token: write
       contents: read
