@@ -36,7 +36,7 @@ jobs:
   
   #PROD
   prod: 
-    if: ${{ github.event.inputs.environment == 'prod' }}
+    if: github.ref_name == 'main'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
