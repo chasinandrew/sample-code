@@ -16,7 +16,7 @@ on:
 jobs: 
   #DEV
   dev:
-    if: github.ref_name == 'develop'
+    if: github.ref_name != 'main'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
@@ -30,23 +30,6 @@ jobs:
       service_name: pods
       code_directory: ./code/Samples.Run.MarkdownPreview.Editor
       cloud_run_sa: cloud-run-sa
-    secrets: inherit
-  
-  #QA
-  qa:
-    if: ${{ github.event.inputs.environment == 'qa' }}
-    uses: ./.github/workflows/_deployment.yaml
-    permissions: 
-      id-token: write
-      contents: read
-    with: 
-      environment: ${{ github.event.inputs.environment }}
-      ref: ${{ github.sha }}
-      gcp_project_id: arched-inkwell-368821
-      artifact_registry_repo: reference-architectures
-      region: us-east4
-      service_name: pods
-      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
     secrets: inherit
   
   #PROD
