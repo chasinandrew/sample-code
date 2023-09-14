@@ -1,0 +1,146 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'.
+      ref:  
+        type: string
+        required: true
+        description: The branch, tag or SHA to checkout.
+      enable:
+        type: boolean
+        required: false
+        default: true
+        description: Whether or not to perform the actual deployment. The default value is true, or perform the deployment.
+      gcp_project_id:
+        type: string
+        required: true
+        description: The Google Cloud project ID.
+      artifact_registry_repo:
+        type: string
+        required: true
+        description: The artifact registry repository name.
+      region:
+        type: string
+        required: true
+        description: The artifact registry region name.
+      service_name:
+        type: string
+        required: true
+        description: The container service name.
+      code_directory: 
+        type: string
+        required: true
+        description: The directory where the source code lives. 
+      cloud_run_sa: 
+        type: string
+        required: false
+        description: The directory where the source code lives. 
+
+jobs:
+  lint: 
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 360
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: PyLint 
+      working-directory: ./code/hello-python
+      run: |
+        pip install -r requirements.txt
+        pip install pylint
+        pylint --recursive=y .
+  scan:
+    name: Scan
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ] #TODO: add csharp
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+        source-root: ./code/hello-python
+
+    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:${{matrix.language}}"
+
+  deploy: 
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    name: "Image Build & Cloud Run Deploy"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
+          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
+
+      # Authenticate Docker to Google Cloud Artifact Registry
+      - name: Docker Auth
+        id: docker-auth
+        uses: 'docker/login-action@v1'
+        with:
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+          registry: '${{ inputs.region }}-docker.pkg.dev'
+
+      - name: Build and Tag
+        id: build-image
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ inputs.code_directory }}
+          push: true 
+          tags: |
+            ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
+            ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest
+      
+      - name: Docker Push
+        run: |-
+          docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
+
+      - name: Create Service declaration   
+        run: |-
+          export IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
+        
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ inputs.service_name }}
+          region: ${{ inputs.region }}
+          metadata: container-${{ inputs.environment }}.yaml 
