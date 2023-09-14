@@ -38,6 +38,10 @@ on:
         type: string
         required: false
         description: The directory where the source code lives. 
+      language: 
+        type: string
+        required: true
+        description: Language the code is written in. 
 
 jobs:
   lint: 
@@ -48,7 +52,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: PyLint 
-      working-directory: ./code/hello-python
+      working-directory: ${{ inputs.code_directory }}
       run: |
         pip install -r requirements.txt
         pip install pylint
@@ -57,6 +61,7 @@ jobs:
     name: Scan
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
+    needs: [lint]
     permissions:
       actions: read
       contents: read
@@ -65,7 +70,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'python' ] #TODO: add csharp
+        language: [ '${{ inputs.language }}' ] #TODO: add csharp
 
     steps:
     - name: Checkout repository
@@ -76,7 +81,7 @@ jobs:
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
-        source-root: ./code/hello-python
+        source-root: ${{ inputs.code_directory }}
 
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
     # If this step fails, then you should remove it and run the build manually (see below)
@@ -93,6 +98,7 @@ jobs:
     name: "Image Build & Cloud Run Deploy"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    needs: [lint, scan]
     permissions:
       id-token: write
       contents: read
