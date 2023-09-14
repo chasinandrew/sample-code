@@ -16,8 +16,20 @@ on:
   pull_request:
 
 jobs:
-  analyze:
-    name: Analyze
+  lint: 
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 360
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: PyLint 
+      run: |
+        pip install pylint
+        pylint --recursive=y ./code/hello-python
+
+  scan:
+    name: Scan
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
     #   - https://gh.io/supported-runners-and-hardware-resources
