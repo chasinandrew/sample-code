@@ -45,6 +45,7 @@ jobs:
 
     - name: PyLint 
       run: |
+        pip install pylint
         pylint --recursive=y ./code/hello-python
 
 
