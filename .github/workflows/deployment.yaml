@@ -41,6 +41,8 @@ jobs:
     permissions: 
       id-token: write
       contents: read
+      actions: read
+      security-events: write
     with: 
       environment: ${{ github.event.inputs.environment }}
       ref: ${{ github.sha }}
