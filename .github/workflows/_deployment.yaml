@@ -89,7 +89,7 @@ jobs:
         category: "/language:${{matrix.language}}"
 
   deploy: 
-    if: github.ref_name == 'main' || github.ref_name == "develop"
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
     name: "Image Build & Cloud Run Deploy"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
