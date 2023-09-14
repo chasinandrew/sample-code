@@ -144,8 +144,3 @@ jobs:
           service: ${{ inputs.service_name }}
           region: ${{ inputs.region }}
           metadata: container-${{ inputs.environment }}.yaml 
-
-      - name: Deploy to Cloud Run
-        if: ${{ inputs.environment }} == 'prod'
-        run: |- 
-          gcloud run services replace container-${{ inputs.environment }}.yaml --region=${{ inputs.region }}
