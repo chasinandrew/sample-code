@@ -44,19 +44,23 @@ on:
         description: Language the code is written in. 
 
 jobs:
-  lint: 
+  lint: #TODO: add linter for csharp / dotnet 
+    if: github.ref_name == 'main' || github.ref_name == 'develop' 
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    #TODO: file linter for github template 
+    #TODO: add editor config 
     - name: PyLint 
       working-directory: ${{ inputs.code_directory }}
       run: |
         pip install -r requirements.txt
         pip install pylint
         pylint --recursive=y .
+
   scan:
     name: Scan
     runs-on: 'ubuntu-latest'
@@ -87,6 +91,7 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
+    #TODO: add if statement for dotnet and python
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
@@ -94,7 +99,7 @@ jobs:
         category: "/language:${{matrix.language}}"
 
   deploy: 
-    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    if: github.ref_name == 'main' || github.ref_name == 'develop' 
     name: "Image Build & Cloud Run Deploy"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -132,8 +137,9 @@ jobs:
           tags: |
             ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
             ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest
-      
+
       - name: Docker Push
+        shell: bash
         run: |-
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
