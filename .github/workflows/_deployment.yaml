@@ -151,7 +151,7 @@ jobs:
         
       - name: Deploy Cloud Run 
         run: |- 
-          gcloud run service replace --project=${{inputs.gcp_project_id}} --region=${{ inputs.region }} container-${{ inputs.environment }}.yaml
+          gcloud run services replace --project=${{inputs.gcp_project_id}} --region=${{ inputs.region }} container-${{ inputs.environment }}.yaml
 
       # - name: Deploy to Cloud Run
       #   id: deploy
