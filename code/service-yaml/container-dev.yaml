@@ -7,7 +7,7 @@ metadata:
   name: ${SERVICE_NAME}
 spec:
   template:
-    metadata:      
+    metadata:
       name: ${SERVICE_NAME}-${REVISION_TAG} 
       annotations:
         run.googleapis.com/execution-environment: gen1
