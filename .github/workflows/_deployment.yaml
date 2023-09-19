@@ -149,10 +149,14 @@ jobs:
           export IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
-      - name: Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: ${{ inputs.service_name }}
-          region: ${{ inputs.region }}
-          metadata: container-${{ inputs.environment }}.yaml 
+      - name: Deploy Cloud Run 
+        run: |- 
+          gcloud run service replace --project=${{inputs.gcp_project_id}} --region=${{ inputs.region }} container-${{ inputs.environment }}.yaml
+
+      # - name: Deploy to Cloud Run
+      #   id: deploy
+      #   uses: google-github-actions/deploy-cloudrun@v0
+      #   with:
+      #     service: ${{ inputs.service_name }}
+      #     region: ${{ inputs.region }}
+      #     metadata: container-${{ inputs.environment }}.yaml 

@@ -54,7 +54,6 @@ spec:
             secretKeyRef:
               name: DATABASE_PASSWORD 
               key: "1" 
-
   traffic: 
   - latestRevision: true
     percent: 100
