@@ -45,7 +45,7 @@ on:
 
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
-    if: github.ref_name == 'main' || github.ref_name == 'develop' 
+    # if: github.ref_name == 'main' || github.ref_name == 'develop' 
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
     steps:
