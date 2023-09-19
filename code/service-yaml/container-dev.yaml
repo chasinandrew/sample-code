@@ -7,8 +7,8 @@ metadata:
   name: ${SERVICE_NAME}
 spec:
   template:
-    metadata:      
-      name: ${SERVICE_NAME}-${REVISION_TAG} 
+    metadata:
+      name: ${SERVICE_NAME}-${REVISION_TAG}
       annotations:
         run.googleapis.com/execution-environment: gen1
         run.googleapis.com/vpc-access-egress: all-traffic
