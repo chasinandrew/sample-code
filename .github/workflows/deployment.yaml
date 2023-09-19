@@ -1,7 +1,7 @@
 name: Build and Deploy to Cloud Run
 on:
   pull_request:
-    branches: [feature/**,develop, main]
+    branches: [develop, main]
   push:
   workflow_dispatch: 
     inputs: 
@@ -35,8 +35,8 @@ jobs:
       language: python
     secrets: inherit
   
-  #PROD
-  prod: 
+  #QA
+  qa: 
     if: github.ref_name == 'main'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
@@ -45,7 +45,7 @@ jobs:
       actions: read
       security-events: write
     with: 
-      environment: ${{ github.event.inputs.environment }}
+      environment: qa
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
