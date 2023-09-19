@@ -36,7 +36,6 @@ spec:
         env:
         - name: PROJECT_ID
           value: ${PROJECT_ID}
-     
   traffic: 
   - latestRevision: true
     percent: 100 
