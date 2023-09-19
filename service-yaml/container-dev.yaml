@@ -56,7 +56,6 @@ spec:
               key: "1" 
 
   traffic: 
-  - revisionName: pods-f9e23705dfdaaad88bacb1f8488b228fc0ad3dfd
-    percent: 90
-  - revisionName: ${REVISION_TAG}
-    percent: 10 
+  - latestRevision: true
+    percent: 100
+    
