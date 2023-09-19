@@ -7,8 +7,8 @@ metadata:
   name: ${SERVICE_NAME}
 spec:
   template:
-    metadata:      
-      name: ${SERVICE_NAME}-${REVISION_TAG} 
+    metadata:
+      name: ${SERVICE_NAME}-${REVISION_TAG}
       annotations:
         run.googleapis.com/execution-environment: gen1
         run.googleapis.com/vpc-access-egress: all-traffic
@@ -36,26 +36,6 @@ spec:
         env:
         - name: PROJECT_ID
           value: ${PROJECT_ID}
-        - name: DB_ROOT_USERNAME 
-          valueFrom:
-            secretKeyRef:
-              name: DB_ROOT_USERNAME 
-              key: "1" 
-        - name: DB_NAME 
-          valueFrom:
-            secretKeyRef:
-              name: DB_NAME 
-              key: "1"
-        - name: DB_CONNECTION_NAME
-          valueFrom:
-            secretKeyRef:
-              name: DB_CONNECTION_NAME
-              key: "1"
-        - name: DB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: DB_ROOT_PASSWORD  
-              key: "1" 
         resources:
           limits:
             memory: "2Gi"

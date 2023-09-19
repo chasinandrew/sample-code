@@ -1,60 +1,49 @@
 name: Build and Deploy to Cloud Run
 on:
+  pull_request:
+    branches: [feature/**,develop, main]
+  push:
   workflow_dispatch: 
     inputs: 
       environment: 
         type: choice
         required: true
-        default: "dev"
+        default: "prod"
         description: GitHub Environment
         options: 
-          - dev
-          - qa
           - prod
 
 jobs: 
   #DEV
   dev:
-    if: ${{ github.event.inputs.environment == 'dev' }}
+    if: github.ref_name != 'main'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
       contents: read
+      actions: read
+      security-events: write
     with: 
-      environment: ${{ github.event.inputs.environment }}
+      environment: dev
       ref: ${{ github.sha }}
       gcp_project_id: arched-inkwell-368821
       artifact_registry_repo: reference-architectures
       region: us-east4
-      service_name: pods
-      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+      service_name: scan-test
+      code_directory: ./code/hello-python
       cloud_run_sa: cloud-run-sa
-    secrets: inherit
-  
-  #QA
-  qa:
-    if: ${{ github.event.inputs.environment == 'qa' }}
-    uses: ./.github/workflows/_deployment.yaml
-    permissions: 
-      id-token: write
-      contents: read
-    with: 
-      environment: ${{ github.event.inputs.environment }}
-      ref: ${{ github.sha }}
-      gcp_project_id: arched-inkwell-368821
-      artifact_registry_repo: reference-architectures
-      region: us-east4
-      service_name: pods
-      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+      language: python
     secrets: inherit
   
   #PROD
   prod: 
-    if: ${{ github.event.inputs.environment == 'prod' }}
+    if: github.ref_name == 'main'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
       contents: read
+      actions: read
+      security-events: write
     with: 
       environment: ${{ github.event.inputs.environment }}
       ref: ${{ github.sha }}
@@ -62,5 +51,6 @@ jobs:
       artifact_registry_repo: reference-architectures
       region: us-east4
       service_name: pods
-      code_directory: ./code/Samples.Run.MarkdownPreview.Editor
+      code_directory: ./code/hello-python
+      language: python
     secrets: inherit

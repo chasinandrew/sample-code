@@ -23,7 +23,7 @@ spec:
         department_id: placeholder
         hca_project_id: placeholder
         tco_id: placeholder
-        app_environment: dev 
+        app_environment: placeholder 
     spec:
       containerConcurrency: 80
       serviceAccountName: ${CLOUD_RUN_SA}
@@ -36,27 +36,6 @@ spec:
         env:
         - name: PROJECT_ID
           value: ${PROJECT_ID}
-        - name: DB_USER 
-          valueFrom:
-            secretKeyRef:
-              name: DB_USER 
-              key: "1" 
-        - name: DB_NAME 
-          valueFrom:
-            secretKeyRef:
-              name: DB_NAME 
-              key: "1"
-        - name: DB_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: DB_NAME 
-              key: "1"
-        - name: DB_PASS
-          valueFrom:
-            secretKeyRef:
-              name: DB_PASS  
-              key: "1" 
-     
   traffic: 
   - latestRevision: true
     percent: 100 

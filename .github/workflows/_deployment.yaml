@@ -38,12 +38,72 @@ on:
         type: string
         required: false
         description: The directory where the source code lives. 
+      language: 
+        type: string
+        required: true
+        description: Language the code is written in. 
 
 jobs:
+  lint: #TODO: add linter for csharp / dotnet 
+    # if: github.ref_name == 'main' || github.ref_name == 'develop' 
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 360
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    #TODO: file linter for github template 
+    #TODO: add editor config 
+    - name: PyLint 
+      working-directory: ${{ inputs.code_directory }}
+      run: |
+        pip install -r requirements.txt
+        pip install pylint
+        pylint --recursive=y .
+
+  scan:
+    name: Scan
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 360
+    needs: [lint]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ '${{ inputs.language }}' ] #TODO: add csharp
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+        source-root: ${{ inputs.code_directory }}
+
+    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+    #TODO: add if statement for dotnet and python
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:${{matrix.language}}"
+
   deploy: 
+    if: github.ref_name == 'main' || github.ref_name == 'develop' 
     name: "Image Build & Cloud Run Deploy"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    needs: [lint, scan]
     permissions:
       id-token: write
       contents: read
@@ -77,8 +137,9 @@ jobs:
           tags: |
             ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
             ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest
-      
+
       - name: Docker Push
+        shell: bash
         run: |-
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
@@ -92,7 +153,14 @@ jobs:
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
-      - name: Deploy to Cloud Run
-        if: ${{ inputs.environment }} == 'prod'
+      - name: Deploy Cloud Run 
         run: |- 
-          gcloud run services replace container-${{ inputs.environment }}.yaml --region=${{ inputs.region }}
+          gcloud run services replace --project=${{inputs.gcp_project_id}} --region=${{ inputs.region }} container-${{ inputs.environment }}.yaml
+
+      # - name: Deploy to Cloud Run
+      #   id: deploy
+      #   uses: google-github-actions/deploy-cloudrun@v0
+      #   with:
+      #     service: ${{ inputs.service_name }}
+      #     region: ${{ inputs.region }}
+      #     metadata: container-${{ inputs.environment }}.yaml 

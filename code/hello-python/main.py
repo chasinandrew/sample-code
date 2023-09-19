@@ -1,3 +1,4 @@
+"""Module providing a function printing hello world as a sample."""
 # Copyright 2020 Google, LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +30,6 @@ def hello_world():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
 # [END run_helloworld_service]
 # [END cloudrun_helloworld_service]
