@@ -146,7 +146,11 @@ jobs:
 
       - name: Create Service declaration   
         run: |-
-          export IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
+          export SERVICE_NAME="${{ inputs.service_name }}"
+          export PROJECT_ID="${{ inputs.gcp_project_id }}"
+          export REVISION_TAG="${{ inputs.ref }}"
+          export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
       - name: Deploy Cloud Run 
