@@ -34,26 +34,6 @@ spec:
         env:
         - name: PROJECT_ID
           value: ${PROJECT_ID}
-        - name: DATABASE_HOST 
-          valueFrom:
-            secretKeyRef:
-              name: DATABASE_HOST
-              key: "1"
-        - name: DATABASE_NAME 
-          valueFrom:
-            secretKeyRef:
-              name: DATABASE_NAME 
-              key: "1"         
-        - name: DATABASE_USERNAME
-          valueFrom: 
-            secretKeyRef: 
-              name: DATABASE_USERNAME
-              key: "1"
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: DATABASE_PASSWORD 
-              key: "1" 
   traffic: 
   - latestRevision: true
     percent: 100
