@@ -16,7 +16,7 @@ on:
 jobs: 
   #DEV
   dev:
-    if: github.ref_name != 'main' && github.ref_name != 'qa'
+    if: github.ref_name != 'main' && ${{ inputs.environment }} != 'prod'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
@@ -37,7 +37,7 @@ jobs:
   
   #QA
   qa: 
-    if: github.ref_name != 'main' && github.ref_name == 'qa'
+    if: github.ref_name != 'develop' && ${{ inputs.environment }} != 'prod'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
@@ -57,7 +57,7 @@ jobs:
 
   #PROD
   prod: 
-    if: inputs.environment == 'prod' && github.ref_name != 'qa' && github.ref_name != 'develop'
+    if: inputs.environment == 'prod' 
     uses: ./.github/workflows/_deployment-prod.yaml
     permissions: 
       id-token: write
