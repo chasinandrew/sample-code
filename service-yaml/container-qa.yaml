@@ -11,8 +11,6 @@ spec:
       name: ${SERVICE_NAME}-${REVISION_TAG} 
       annotations:
         run.googleapis.com/execution-environment: gen1
-        run.googleapis.com/vpc-access-egress: all-traffic
-        run.googleapis.com/vpc-access-connector: projects/arched-inkwell-368821/locations/us-east4/connectors/pods-2
         autoscaling.knative.dev/minScale: '3'
         autoscaling.knative.dev/maxScale: '100'
       labels: 
