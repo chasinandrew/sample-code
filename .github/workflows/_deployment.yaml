@@ -98,7 +98,7 @@ jobs:
     #     category: "/language:${{matrix.language}}"
 
   image-build-push: 
-    if: contains(fromJSON('["develop", "qa", "main"]'), github.ref_name)
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name)
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -144,7 +144,7 @@ jobs:
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
 
   deploy: 
-    if: contains(fromJSON('["develop", "qa", "main"]'), github.ref_name)
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && ${{ inputs.environment }} != "prod"
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -165,7 +165,6 @@ jobs:
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
 
       - name: Create Service ${{ inputs.environment }} Declaration   
-        if: ${{ inputs.environment }} != "prod"
         run: |-
           export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
           export SERVICE_NAME="${{ inputs.service_name }}"
@@ -175,7 +174,6 @@ jobs:
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
       - name: Deploy to ${{ inputs.environment }} Cloud Run
-        if: ${{ inputs.environment }} != "prod" 
         id: deploy-dev-qa
         uses: google-github-actions/deploy-cloudrun@v0
         with:
