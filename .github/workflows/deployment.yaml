@@ -3,6 +3,7 @@ on:
   pull_request:
     branches: [develop, main]
   push:
+    branches: [feature/**]
   workflow_dispatch: 
     inputs: 
       environment: 
@@ -27,7 +28,7 @@ jobs:
       environment: dev
       ref: ${{ github.sha }}
       gcp_project_id: hca-demo-dev
-      artifact_registry_repo: reference-architectures
+      artifact_registry_repo: blueprints
       region: us-east4
       service_name: sample-service
       code_directory: ./code/hello-python
@@ -48,13 +49,14 @@ jobs:
       environment: qa
       ref: ${{ github.sha }}
       gcp_project_id: hca-demo-qa
-      artifact_registry_repo: reference-architectures
+      artifact_registry_repo: blueprints
       region: us-east4
       service_name: sample-service
       code_directory: ./code/hello-python
       language: python
     secrets: inherit
 
+  #PROD
   prod: 
     if: inputs.environment == 'prod'
     uses: ./.github/workflows/_deployment.yaml
@@ -67,7 +69,7 @@ jobs:
       environment: prod
       ref: ${{ github.sha }}
       gcp_project_id: hca-demo-prod
-      artifact_registry_repo: reference-architectures
+      artifact_registry_repo: blueprints
       region: us-east4
       service_name: sample-service
       code_directory: ./code/hello-python
