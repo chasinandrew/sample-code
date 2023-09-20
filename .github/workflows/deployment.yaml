@@ -1,94 +1,76 @@
+name: Build and Deploy to Cloud Run
 on:
-  workflow_call:
-    inputs:
-      environment:
-        type: string
+  pull_request:
+    branches: [develop, qa, main]
+  push:
+  workflow_dispatch: 
+    inputs: 
+      environment: 
+        type: choice
         required: true
-        description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'.
-      ref:  
-        type: string
-        required: true
-        description: The branch, tag or SHA to checkout.
-      enable:
-        type: boolean
-        required: false
-        default: true
-        description: Whether or not to perform the actual deployment. The default value is true, or perform the deployment.
-      gcp_project_id:
-        type: string
-        required: true
-        description: The Google Cloud project ID.
-      artifact_registry_repo:
-        type: string
-        required: true
-        description: The artifact registry repository name.
-      artifact_registry_location:
-        type: string
-        required: true
-        description: The artifact registry region name.
-      docker_image_name:
-        type: string
-        required: true
-        description: The container image name.
-      service_name:
-        type: string
-        required: true
-        description: The container service name.
-      code_directory: 
-        type: string
-        required: true
-        description: The directory where the source code lives. 
+        default: "prod"
+        description: GitHub Environment
+        options: 
+          - prod
 
-jobs:
-  cloud-run: 
-    name: "Image Build & Cloud Run Deploy"
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    permissions:
+jobs: 
+  #DEV
+  dev:
+    if: github.ref_name != 'main'
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
       id-token: write
       contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      actions: read
+      security-events: write
+    with: 
+      environment: dev
+      ref: ${{ github.sha }}
+      gcp_project_id: hca-demo-dev
+      artifact_registry_repo: blueprints
+      region: us-east4
+      service_name: sample-service
+      code_directory: ./code/hello-python
+      cloud_run_sa: cloud-run-sa
+      language: python
+    secrets: inherit
+  
+  #QA
+  qa: 
+    if: github.ref_name == 'main'
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+      actions: read
+      security-events: write
+    with: 
+      environment: qa
+      ref: ${{ github.sha }}
+      gcp_project_id: hca-demo-qa
+      artifact_registry_repo: blueprints
+      region: us-east4
+      service_name: sample-service
+      code_directory: ./code/hello-python
+      language: python
+    secrets: inherit
 
-      - name: Google Auth
-        id: auth
-        uses: 'google-github-actions/auth@v0'
-        with:
-          token_format: 'access_token'
-          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
-          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
-
-      # Authenticate Docker to Google Cloud Artifact Registry
-      - name: Docker Auth
-        id: docker-auth
-        uses: 'docker/login-action@v1'
-        with:
-          username: 'oauth2accesstoken'
-          password: '${{ steps.auth.outputs.access_token }}'
-          registry: '${{ inputs.artifact_registry_location }}-docker.pkg.dev'
-
-      - name: Build and Tag
-        id: build-image
-        uses: docker/build-push-action@v3
-        with:
-          context: ${{ inputs.code_directory }}
-          push: true 
-          tags: ${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
-      
-      - name: Docker Push
-        run: |-
-          docker push "${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
-
-      - name: Create Service declaration   
-        run: |-
-          export CONTAINER_IMAGE="${{ inputs.artifact_registry_location }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
-          export SERVICE_NAME="${{ inputs.service_name }}"
-          export PROJECT_ID="${{ inputs.gcp_project_id }}"
-          export REVISION_TAG=${{ inputs.ref }}
-          export CLOUD_RUN_SA=${{ inputs.cloud_run_sa }}
-          envsubst < ./service-yaml/container.yaml > container.yaml
-        
-      - name: Deploy to Cloud Run
-        run: |- 
-          gcloud run services replace container.yaml --region=${{ inputs.artifact_registry_location }}
+  #PROD
+  prod: 
+    if: inputs.environment == 'prod'
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+      actions: read
+      security-events: write
+    with: 
+      environment: prod
+      ref: ${{ github.sha }}
+      gcp_project_id: hca-demo-prod
+      artifact_registry_repo: blueprints
+      region: us-east4
+      service_name: sample-service
+      code_directory: ./code/hello-python
+      language: python
+    secrets: inherit
