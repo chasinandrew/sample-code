@@ -152,14 +152,14 @@ jobs:
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
-      - name: Deploy Cloud Run 
-        run: |- 
-          gcloud run services replace --project=${{inputs.gcp_project_id}} --region=${{ inputs.region }} container-${{ inputs.environment }}.yaml
+      # - name: Deploy Cloud Run 
+      #   run: |- 
+      #     gcloud run services replace --project=${{inputs.gcp_project_id}} --region=${{ inputs.region }} container-${{ inputs.environment }}.yaml
 
-      # - name: Deploy to Cloud Run
-      #   id: deploy
-      #   uses: google-github-actions/deploy-cloudrun@v0
-      #   with:
-      #     service: ${{ inputs.service_name }}
-      #     region: ${{ inputs.region }}
-      #     metadata: container-${{ inputs.environment }}.yaml 
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ inputs.service_name }}
+          region: ${{ inputs.region }}
+          metadata: container-${{ inputs.environment }}.yaml 
