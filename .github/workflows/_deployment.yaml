@@ -178,7 +178,7 @@ jobs:
         
       - name: Deploy to DEV/QA Cloud Run
         if: ${{ inputs.environment }} != "prod" 
-        id: deploy
+        id: deploy-dev-qa
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ inputs.gcp_project_id }}
@@ -198,7 +198,7 @@ jobs:
         
       - name: Deploy to PROD Cloud Run
         if: ${{ inputs.environment }} == "prod"
-        id: deploy
+        id: deploy-prod
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ inputs.gcp_project_id }}
