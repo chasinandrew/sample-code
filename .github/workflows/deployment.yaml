@@ -57,8 +57,8 @@ jobs:
 
   #PROD
   prod: 
-    if: inputs.environment == 'prod'
-    uses: ./.github/workflows/_deployment.yaml
+    if: inputs.environment == 'prod' && github.ref_name != 'qa' && github.ref_name != 'develop'
+    uses: ./.github/workflows/_deployment-prod.yaml
     permissions: 
       id-token: write
       contents: read
