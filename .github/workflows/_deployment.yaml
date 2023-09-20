@@ -98,7 +98,7 @@ jobs:
         category: "/language:${{matrix.language}}"
 
   image-build-push: 
-    if: contains(fromJSON('["develop", "qa", "main]'), github.ref_name)
+    if: contains(fromJSON('["develop", "qa", "main"]'), github.ref_name)
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
