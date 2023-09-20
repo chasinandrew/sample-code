@@ -37,7 +37,7 @@ jobs:
   
   #QA
   qa: 
-    if: github.ref_name == "qa"
+    if: github.ref_name == 'qa'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
