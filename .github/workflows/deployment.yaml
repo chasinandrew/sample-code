@@ -1,7 +1,7 @@
 name: Build and Deploy to Cloud Run
 on:
   pull_request:
-    branches: [develop, main]
+    branches: [develop, qa, main]
   push:
   workflow_dispatch: 
     inputs: 
@@ -16,7 +16,7 @@ on:
 jobs: 
   #DEV
   dev:
-    if: github.ref_name != 'main'
+    if: github.ref_name != 'main' && github.ref_name != 'qa'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
@@ -26,10 +26,10 @@ jobs:
     with: 
       environment: dev
       ref: ${{ github.sha }}
-      gcp_project_id: arched-inkwell-368821
-      artifact_registry_repo: reference-architectures
+      gcp_project_id: hca-demo-dev
+      artifact_registry_repo: blueprints
       region: us-east4
-      service_name: scan-test
+      service_name: sample-service
       code_directory: ./code/hello-python
       cloud_run_sa: cloud-run-sa
       language: python
@@ -37,7 +37,7 @@ jobs:
   
   #QA
   qa: 
-    if: github.ref_name == 'main'
+    if: github.ref_name != 'main' && github.ref_name == 'qa'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
@@ -47,10 +47,30 @@ jobs:
     with: 
       environment: qa
       ref: ${{ github.sha }}
-      gcp_project_id: arched-inkwell-368821
-      artifact_registry_repo: reference-architectures
+      gcp_project_id: hca-demo-qa
+      artifact_registry_repo: blueprints
       region: us-east4
-      service_name: pods
+      service_name: sample-service
+      code_directory: ./code/hello-python
+      language: python
+    secrets: inherit
+
+  #PROD
+  prod: 
+    if: inputs.environment == 'prod'
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+      actions: read
+      security-events: write
+    with: 
+      environment: prod
+      ref: ${{ github.sha }}
+      gcp_project_id: hca-demo-prod
+      artifact_registry_repo: blueprints
+      region: us-east4
+      service_name: sample-service
       code_directory: ./code/hello-python
       language: python
     secrets: inherit

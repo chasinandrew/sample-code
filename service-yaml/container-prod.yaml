@@ -36,5 +36,4 @@ spec:
           value: ${PROJECT_ID}
   traffic: 
   - latestRevision: true
-    percent: 100
-    
+    percent: 100 #TODO: provide as inputs for use with workflow dispatch
