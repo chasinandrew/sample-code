@@ -58,7 +58,7 @@ jobs:
   #PROD
   prod: 
     if: inputs.environment == 'prod'
-    uses: ./.github/workflows/_deployment.yaml
+    uses: ./.github/workflows/_deployment-prod.yaml
     permissions: 
       id-token: write
       contents: read
