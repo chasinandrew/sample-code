@@ -143,7 +143,6 @@ jobs:
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
 
-
   deploy: 
     if: contains(fromJSON('["develop", "qa", "main"]'), github.ref_name)
     name: "Cloud Run Deployment"
@@ -178,65 +177,6 @@ jobs:
       - name: Deploy to ${{ inputs.environment }} Cloud Run
         if: ${{ inputs.environment }} != "prod" 
         id: deploy-dev-qa
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          project_id: ${{ inputs.gcp_project_id }}
-          service: ${{ inputs.service_name }}
-          region: ${{ inputs.region }}
-          metadata: container-${{ inputs.environment }}.yaml 
-      
-      - name: Create Service PROD Declaration   
-        if: ${{ inputs.environment }} == "prod"
-        run: |-
-          export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
-          export SERVICE_NAME="${{ inputs.service_name }}"
-          export PROJECT_ID="${{ inputs.gcp_project_id }}"
-          export REVISION_TAG="${{ inputs.ref }}"
-          export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
-          envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
-        
-      - name: Deploy to PROD Cloud Run
-        if: ${{ inputs.environment }} == "prod"
-        id: deploy-prod
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          project_id: ${{ inputs.gcp_project_id }}
-          service: ${{ inputs.service_name }}
-          region: ${{ inputs.region }}
-          metadata: container-${{ inputs.environment }}.yaml 
-
-  deploy-prod: 
-    if: contains(fromJSON('["develop", "qa", "main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
-    name: "Cloud Run Deployment"
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    needs: [image-build-push]
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Google Authentication
-        id: auth
-        uses: 'google-github-actions/auth@v0'
-        with:
-          token_format: 'access_token'
-          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
-          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
-   
-      - name: Create Service PROD Declaration   
-        run: |-
-          export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
-          export SERVICE_NAME="${{ inputs.service_name }}"
-          export PROJECT_ID="${{ inputs.gcp_project_id }}"
-          export REVISION_TAG="${{ inputs.ref }}"
-          export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
-          envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
-        
-      - name: Deploy to PROD Cloud Run
-        id: deploy-prod
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ inputs.gcp_project_id }}

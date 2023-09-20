@@ -79,16 +79,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        source-root: ${{ inputs.code_directory }}
+    # # Initializes the CodeQL tools for scanning.
+    # - name: Initialize CodeQL
+    #   uses: github/codeql-action/init@v2
+    #   with:
+    #     languages: ${{ matrix.language }}
+    #     source-root: ${{ inputs.code_directory }}
 
-    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
+    # # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
+    # # If this step fails, then you should remove it and run the build manually (see below)
+    # - name: Autobuild
       uses: github/codeql-action/autobuild@v2
     #TODO: add if statement for dotnet and python
 
@@ -144,7 +144,7 @@ jobs:
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
 
   deploy-prod: 
-    if: contains(fromJSON('["develop", "qa", "main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
+    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -164,7 +164,7 @@ jobs:
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
    
-      - name: Create Service PROD Declaration   
+      - name: Create Service ${{ inputs.environment }} Declaration   
         run: |-
           export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
           export SERVICE_NAME="${{ inputs.service_name }}"
@@ -173,7 +173,7 @@ jobs:
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
-      - name: Deploy to PROD Cloud Run
+      - name: Deploy to ${{ inputs.environment }} Cloud Run
         id: deploy-prod
         uses: google-github-actions/deploy-cloudrun@v0
         with:
