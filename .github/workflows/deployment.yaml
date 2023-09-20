@@ -16,7 +16,7 @@ on:
 jobs: 
   #DEV
   dev:
-    if: github.ref_name != 'main' && ${{ inputs.environment }} != 'prod'
+    if: github.ref_name != 'main'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
