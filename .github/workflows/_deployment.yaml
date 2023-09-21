@@ -45,7 +45,7 @@ on:
 
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
-    # if: contains('feature', github.ref_name)
+    if: contains('feature', github.ref_name)
     name: Lint
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
