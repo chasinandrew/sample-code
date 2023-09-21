@@ -45,7 +45,6 @@ on:
 
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
-    if: contains('feature', github.ref_name)
     name: Lint
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
@@ -56,6 +55,7 @@ jobs:
     #TODO: file linter for github template 
     #TODO: add editor config 
     - name: PyLint 
+      if: contains('feature', github.ref_name)
       working-directory: ${{ inputs.code_directory }}
       run: |
         pip install -r requirements.txt
