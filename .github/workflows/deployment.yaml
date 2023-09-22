@@ -57,6 +57,12 @@ jobs:
       ref: ${{ github.sha }}
       region: us-east4
       service_name: sample-service
+      app_code: sample
+      classification: placeholder
+      cost_id: placeholder
+      department_id: placeholder
+      hca_project_id: placeholder
+      tco_id: placeholder
     secrets: inherit
   
   #QA
@@ -78,6 +84,12 @@ jobs:
       ref: ${{ github.sha }}
       region: us-east4
       service_name: sample-service
+      app_code: sample
+      classification: placeholder
+      cost_id: placeholder
+      department_id: placeholder
+      hca_project_id: placeholder
+      tco_id: placeholder
     secrets: inherit
 
   #PROD
@@ -100,4 +112,10 @@ jobs:
       ref: ${{ github.sha }}
       region: us-east4
       service_name: sample-service
+      app_code: sample
+      classification: placeholder
+      cost_id: placeholder
+      department_id: placeholder
+      hca_project_id: placeholder
+      tco_id: placeholder
     secrets: inherit

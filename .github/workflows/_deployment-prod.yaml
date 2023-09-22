@@ -56,65 +56,36 @@ on:
         type: string
         required: false
         description: Existing Cloud Run revision name
-
+      app_code: 
+        type: string
+        required: true
+        description: App code for labels. 
+      classification: 
+        type: string
+        required: true
+        description: Data classification for labels. 
+      cost_id: 
+        type: string
+        required: true
+        description: Cost ID for labels. 
+      department_id: 
+        type: string
+        required: true
+        description: Department ID for labels. 
+      hca_project_id: 
+        type: string
+        required: true
+        description: HCA project ID for labels. 
+      tco_id: 
+        type: string
+        required: true
+        description: TCO ID for labels. 
 jobs:
-  lint: #TODO: add linter for csharp / dotnet 
-    runs-on: 'ubuntu-latest'
-    timeout-minutes: 360
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: PyLint 
-      working-directory: ${{ inputs.code_directory }}
-      run: |
-        pip install -r requirements.txt
-        pip install pylint
-        pylint --recursive=y .
-
-  scan:
-    name: Scan
-    runs-on: 'ubuntu-latest'
-    timeout-minutes: 360
-    needs: [lint]
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ '${{ inputs.language }}' ] #TODO: add csharp
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    # # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        source-root: ${{ inputs.code_directory }}
-
-    # # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
-    # # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-    #TODO: add if statement for dotnet and python
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
-
   image-build-push: 
     if: contains(fromJSON('"main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    needs: [lint, scan]
     permissions:
       id-token: write
       contents: read
@@ -183,6 +154,14 @@ jobs:
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
           export REVISION_TAG="${{ inputs.ref }}"
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
+          export REGION="${{ inputs.region }}"
+          export APP_CODE="${{ inputs.app_code }}"
+          export CLASSIFICATION="${{ inputs.classification }}"
+          export COST_ID="${{ inputs.cost_id }}"
+          export DEPARTMENT_ID="${{ inputs.department_id }}"
+          export HCA_PROJECT_ID="${{ inputs.hca_project_id }}"
+          export TCO_ID="${{ inputs.tco_id }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
           export NEW_REVISION_PERCENTAGE=${{ inputs.new_revision_percentage }}
           export EXISTING_REVISION=${{ inputs.existing_revision }}
           export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
