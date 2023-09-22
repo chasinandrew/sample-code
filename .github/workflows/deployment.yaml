@@ -63,7 +63,6 @@ jobs:
       department_id: placeholder
       hca_project_id: placeholder
       tco_id: placeholder
-      app_environment: placeholder
     secrets: inherit
   
   #QA
@@ -91,7 +90,6 @@ jobs:
       department_id: placeholder
       hca_project_id: placeholder
       tco_id: placeholder
-      app_environment: placeholder
     secrets: inherit
 
   #PROD
@@ -120,5 +118,4 @@ jobs:
       department_id: placeholder
       hca_project_id: placeholder
       tco_id: placeholder
-      app_environment: placeholder
     secrets: inherit
