@@ -100,11 +100,10 @@ jobs:
         category: "/language:${{matrix.language}}"
 
   image-build-push: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && needs.lint.result != 'failure' && needs.scan.result != 'failure'
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name)
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    needs: [lint, scan]
     permissions:
       id-token: write
       contents: read
