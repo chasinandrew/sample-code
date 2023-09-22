@@ -52,10 +52,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    #TODO: file linter for github template 
-    #TODO: add editor config 
+    #TODO: add editor config for dotnet
     - name: PyLint 
-      if: contains('feature', github.ref_name)
+      if: github.event_name == 'pull_request'
       working-directory: ${{ inputs.code_directory }}
       run: |
         pip install -r requirements.txt
@@ -64,6 +63,7 @@ jobs:
 
   scan:
     name: Scan
+    if: github.event_name == 'pull_request'
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
     needs: [lint]
@@ -95,9 +95,9 @@ jobs:
     #TODO: add if statement for dotnet and python
 
     # - name: Perform CodeQL Analysis
-    #   uses: github/codeql-action/analyze@v2
-    #   with:
-    #     category: "/language:${{matrix.language}}"
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:${{matrix.language}}"
 
   image-build-push: 
     if: contains(fromJSON('["develop", "main"]'), github.ref_name)
