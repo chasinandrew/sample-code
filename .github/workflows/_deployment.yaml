@@ -54,7 +54,7 @@ jobs:
 
     #TODO: add editor config for dotnet
     - name: PyLint 
-      if: github.event_name == 'pull_request'
+      # if: github.event_name == 'pull_request'
       working-directory: ${{ inputs.code_directory }}
       run: |
         pip install -r requirements.txt
@@ -63,7 +63,7 @@ jobs:
 
   scan:
     name: Scan
-    if: github.event_name == 'pull_request'
+    # if: github.event_name == 'pull_request'
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
     needs: [lint]
