@@ -56,7 +56,30 @@ on:
         type: string
         required: false
         description: Existing Cloud Run revision name
-
+      app_code: 
+        type: string
+        required: true
+        description: App code for labels. 
+      classification: 
+        type: string
+        required: true
+        description: Data classification for labels. 
+      cost_id: 
+        type: string
+        required: true
+        description: Cost ID for labels. 
+      department_id: 
+        type: string
+        required: true
+        description: Department ID for labels. 
+      hca_project_id: 
+        type: string
+        required: true
+        description: HCA project ID for labels. 
+      tco_id: 
+        type: string
+        required: true
+        description: TCO ID for labels. 
 jobs:
   image-build-push: 
     if: contains(fromJSON('"main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
@@ -131,6 +154,14 @@ jobs:
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
           export REVISION_TAG="${{ inputs.ref }}"
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
+          export REGION="${{ inputs.region }}"
+          export APP_CODE="${{ inputs.app_code }}"
+          export CLASSIFICATION="${{ inputs.classification }}"
+          export COST_ID="${{ inputs.cost_id }}"
+          export DEPARTMENT_ID="${{ inputs.department_id }}"
+          export HCA_PROJECT_ID="${{ inputs.hca_project_id }}"
+          export TCO_ID="${{ inputs.tco_id }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
           export NEW_REVISION_PERCENTAGE=${{ inputs.new_revision_percentage }}
           export EXISTING_REVISION=${{ inputs.existing_revision }}
           export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
