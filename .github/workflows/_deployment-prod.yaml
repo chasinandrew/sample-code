@@ -56,7 +56,7 @@ on:
         type: string
         required: false
         description: Existing Cloud Run revision name
-      app-code: 
+      app_code: 
         type: string
         required: true
         description: App code for labels. 

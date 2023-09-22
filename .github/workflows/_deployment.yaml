@@ -42,7 +42,7 @@ on:
         type: string
         required: true
         description: Language the code is written in. 
-      app-code: 
+      app_code: 
         type: string
         required: true
         description: App code for labels. 
