@@ -42,6 +42,20 @@ on:
         type: string
         required: true
         description: Language the code is written in. 
+      new_revision_percentage: 
+        type: string
+        required: true
+        default: 10
+        description: New Cloud Run revision traffic percentage
+      existing_revision_percentage: 
+        type: string
+        required: true
+        default: 90
+        description: Existing Cloud Run revision traffic percentage
+      existing_revision: 
+        type: string
+        required: true
+        description: Existing Cloud Run revision name
 
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
@@ -169,6 +183,9 @@ jobs:
           export PROJECT_ID="${{ inputs.gcp_project_id }}"
           export REVISION_TAG="${{ inputs.ref }}"
           export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
+          export NEW_REVISION_PERCENTAGE=${{ inputs.new_revision_percentage }}
+          export EXISTING_REVISION=${{ inputs.existing_revision }}
+          export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
         
       - name: Deploy to ${{ inputs.environment }} Cloud Run
