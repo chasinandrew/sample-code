@@ -12,6 +12,30 @@ on:
         description: GitHub Environment
         options: 
           - prod
+      new_revision_percentage: 
+        type: choice
+        required: true
+        default: 10
+        description: New Cloud Run revision traffic percentage
+        options: 
+          - "10"
+          - "25"
+          - "50"
+          - "75"
+          - "90"
+          - "100"
+      old_revision_percentage: 
+        type: choice
+        required: true
+        default: 10
+        description: Old Cloud Run revision traffic percentage
+        options: 
+          - "10"
+          - "25"
+          - "50"
+          - "75"
+          - "90"
+          - "100"
 
 jobs: 
   #DEV
@@ -72,6 +96,7 @@ jobs:
       environment: prod
       gcp_project_id: hca-demo-prod
       language: python
+      existing_revision: sample-service-9190ff95e1c0e325fc0561c4f67df488861d05b9
       ref: ${{ github.sha }}
       region: us-east4
       service_name: sample-service
