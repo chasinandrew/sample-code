@@ -100,7 +100,7 @@ jobs:
         category: "/language:${{matrix.language}}"
 
   image-build-push: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name)
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && needs.lint.result != 'failure' && needs.scan.result != 'failure'
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -146,7 +146,7 @@ jobs:
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
 
   deploy: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && ${{ inputs.environment }} != "prod"
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && ${{ inputs.environment }} != "prod" 
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
