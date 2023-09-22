@@ -44,17 +44,17 @@ on:
         description: Language the code is written in. 
       new_revision_percentage: 
         type: string
-        required: true
+        required: false
         default: 10
         description: New Cloud Run revision traffic percentage
       existing_revision_percentage: 
         type: string
-        required: true
+        required: false
         default: 90
         description: Existing Cloud Run revision traffic percentage
       existing_revision: 
         type: string
-        required: true
+        required: false
         description: Existing Cloud Run revision name
 
 jobs:
