@@ -36,6 +36,6 @@ spec:
           value: ${PROJECT_ID}
   traffic: 
   - revisionName: ${SERVICE_NAME}-${REVISION_TAG}
-    percent: ${NEW_REVISION_PERCENTAGE} #TODO: provide as inputs for use with workflow dispatch
+    percent: ${NEW_REVISION_PERCENTAGE} 
   - revisionName: ${EXISTING_REVISION}
     percent: ${EXISTING_REVISION_PERCENTAGE}
