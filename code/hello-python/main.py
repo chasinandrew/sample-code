@@ -24,7 +24,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    """Sample Deployment Test."""
+    """Demo Deployment Test."""
     name = os.environ.get("NAME", "World")
     return f"Hello {name}!"
 

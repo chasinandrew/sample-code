@@ -21,7 +21,7 @@ spec:
         department_id: ${DEPARTMENT_ID}
         hca_project_id: ${HCA_PROJECT_ID}
         tco_id: ${TCO_ID}
-        app_environment: ${ENVIRONMENT} 
+        app_environment: ${ENVIRONMENT}
     spec:
       containerConcurrency: 80
       serviceAccountName: ${CLOUD_RUN_SA}
