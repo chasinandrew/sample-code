@@ -108,7 +108,7 @@ jobs:
       environment: prod
       gcp_project_id: hca-demo-prod
       language: python
-      existing_revision: sample-service-20819ab5bf2513a237eb688cd91529f16e6dcaf4
+      existing_revision: sample-service-fda0276dea649024885871536ed90f41a05cf42e
       ref: ${{ github.sha }}
       region: us-east4
       service_name: sample-service
