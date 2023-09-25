@@ -27,7 +27,7 @@ on:
       old_revision_percentage: 
         type: choice
         required: true
-        default: 10
+        default: 90
         description: Old Cloud Run revision traffic percentage
         options: 
           - "10"
@@ -108,7 +108,7 @@ jobs:
       environment: prod
       gcp_project_id: hca-demo-prod
       language: python
-      existing_revision: sample-service-9190ff95e1c0e325fc0561c4f67df488861d05b9
+      existing_revision: sample-service-20819ab5bf2513a237eb688cd91529f16e6dcaf4
       ref: ${{ github.sha }}
       region: us-east4
       service_name: sample-service
