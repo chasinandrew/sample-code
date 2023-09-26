@@ -56,7 +56,7 @@ jobs:
       language: python
       ref: ${{ github.sha }}
       region: us-east4
-      service_name: sample-service
+      service_name: sample-service 
       app_code: sample
       classification: placeholder
       cost_id: placeholder
@@ -102,7 +102,7 @@ jobs:
       actions: read
       security-events: write
     with: 
-      artifact_registry_repo: blueprints
+      artifact_registry_repo: blueprints #TODO: add artifact registry project id
       cloud_run_sa: cloud-run-sa
       code_directory: ./code/hello-python
       environment: prod

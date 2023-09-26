@@ -160,7 +160,8 @@ jobs:
           tags: |
             ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
             ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest
-
+      
+      #TODO: push fromo QA to PROD, build once 
       - name: Docker Push
         shell: bash
         run: |-
