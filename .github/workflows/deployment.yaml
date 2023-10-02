@@ -15,7 +15,7 @@ on:
       new_revision_percentage: 
         type: choice
         required: true
-        default: 10
+        default: '10'
         description: New Cloud Run revision traffic percentage
         options: 
           - "10"
@@ -27,7 +27,7 @@ on:
       old_revision_percentage: 
         type: choice
         required: true
-        default: 90
+        default: '90'
         description: Old Cloud Run revision traffic percentage
         options: 
           - "10"
@@ -36,6 +36,14 @@ on:
           - "75"
           - "90"
           - "100"
+      old_revision_name:
+        type: string
+        required: true
+        description: Old Cloud Run revision name. 
+      new_revision_name: 
+        type: string
+        required: true
+        description: New Cloud Run Revision name. 
 
 jobs: 
   #DEV

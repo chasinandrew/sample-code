@@ -82,7 +82,7 @@ on:
         description: TCO ID for labels. 
 jobs:
   image-build-push: 
-    if: contains(fromJSON('"main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
+    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
