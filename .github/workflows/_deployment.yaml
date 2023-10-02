@@ -1,71 +1,71 @@
 on:
   workflow_call:
-    inputs:
-      environment:
-        type: string
-        required: true
-        description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'.
-      ref:  
-        type: string
-        required: true
-        description: The branch, tag or SHA to checkout.
-      enable:
-        type: boolean
-        required: false
-        default: true
-        description: Whether or not to perform the actual deployment. The default value is true, or perform the deployment.
-      gcp_project_id:
-        type: string
-        required: true
-        description: The Google Cloud project ID.
-      artifact_registry_repo:
-        type: string
-        required: true
-        description: The artifact registry repository name.
-      # region:
-      #   type: string
-      #   required: true
-      #   description: The artifact registry region name.
-      service_name:
-        type: string
-        required: true
-        description: The container service name.
-      # code_directory: 
-      #   type: string
-      #   required: true
-      #   description: The directory where the source code lives. 
-      cloud_run_sa: 
-        type: string
-        required: false
-        description: The directory where the source code lives. 
-      language: 
-        type: string
-        required: true
-        description: Language the code is written in. 
-      app_code: 
-        type: string
-        required: true
-        description: App code for labels. 
-      classification: 
-        type: string
-        required: true
-        description: Data classification for labels. 
-      cost_id: 
-        type: string
-        required: true
-        description: Cost ID for labels. 
-      department_id: 
-        type: string
-        required: true
-        description: Department ID for labels. 
-      hca_project_id: 
-        type: string
-        required: true
-        description: HCA project ID for labels. 
-      tco_id: 
-        type: string
-        required: true
-        description: TCO ID for labels. 
+    # inputs:
+    #   environment:
+    #     type: string
+    #     required: true
+    #     description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'.
+    #   ref:  
+    #     type: string
+    #     required: true
+    #     description: The branch, tag or SHA to checkout.
+    #   enable:
+    #     type: boolean
+    #     required: false
+    #     default: true
+    #     description: Whether or not to perform the actual deployment. The default value is true, or perform the deployment.
+    #   gcp_project_id:
+    #     type: string
+    #     required: true
+    #     description: The Google Cloud project ID.
+    #   artifact_registry_repo:
+    #     type: string
+    #     required: true
+    #     description: The artifact registry repository name.
+    #   # region:
+    #   #   type: string
+    #   #   required: true
+    #   #   description: The artifact registry region name.
+    #   service_name:
+    #     type: string
+    #     required: true
+    #     description: The container service name.
+    #   # code_directory: 
+    #   #   type: string
+    #   #   required: true
+    #   #   description: The directory where the source code lives. 
+    #   cloud_run_sa: 
+    #     type: string
+    #     required: false
+    #     description: The directory where the source code lives. 
+    #   language: 
+    #     type: string
+    #     required: true
+    #     description: Language the code is written in. 
+    #   app_code: 
+    #     type: string
+    #     required: true
+    #     description: App code for labels. 
+    #   classification: 
+    #     type: string
+    #     required: true
+    #     description: Data classification for labels. 
+    #   cost_id: 
+    #     type: string
+    #     required: true
+    #     description: Cost ID for labels. 
+    #   department_id: 
+    #     type: string
+    #     required: true
+    #     description: Department ID for labels. 
+    #   hca_project_id: 
+    #     type: string
+    #     required: true
+    #     description: HCA project ID for labels. 
+    #   tco_id: 
+    #     type: string
+    #     required: true
+    #     description: TCO ID for labels. 
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
     name: Lint
