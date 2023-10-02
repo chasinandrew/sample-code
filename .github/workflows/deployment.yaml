@@ -58,12 +58,12 @@ jobs:
     with: 
       artifact_registry_repo: blueprints
       cloud_run_sa: cloud-run-sa
-      code_directory: ./code/hello-python
+      # code_directory: ./code/hello-python
       environment: dev
       gcp_project_id: hca-demo-dev
       language: python
       ref: ${{ github.sha }}
-      region: us-east4
+      # region: us-east4
       service_name: sample-service 
       app_code: sample
       classification: placeholder

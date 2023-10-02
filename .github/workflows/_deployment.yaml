@@ -22,18 +22,18 @@ on:
         type: string
         required: true
         description: The artifact registry repository name.
-      region:
-        type: string
-        required: true
-        description: The artifact registry region name.
+      # region:
+      #   type: string
+      #   required: true
+      #   description: The artifact registry region name.
       service_name:
         type: string
         required: true
         description: The container service name.
-      code_directory: 
-        type: string
-        required: true
-        description: The directory where the source code lives. 
+      # code_directory: 
+      #   type: string
+      #   required: true
+      #   description: The directory where the source code lives. 
       cloud_run_sa: 
         type: string
         required: false
