@@ -4,7 +4,6 @@ on:
     types: [published]
 jobs:
   image-build-push: 
-    if: contains(fromJSON('["main"]'), github.ref_name)
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: prod
