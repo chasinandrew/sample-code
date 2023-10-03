@@ -3,10 +3,10 @@ on:
     types: [published]
 jobs:
   image-build-push: 
-    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ vars.environment }} == "prod" && github.event_name == 'release'
+    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod" && github.event_name == 'release'
     name: "Image Build & Push"
     runs-on: ubuntu-latest
-    environment: ${{ vars.environment }}
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
@@ -48,10 +48,10 @@ jobs:
           docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   deploy-prod: 
-    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ vars.environment }} == "prod"
+    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
-    environment: ${{ vars.environment }}
+    environment: ${{ inputs.environment }}
     needs: [image-build-push]
     permissions:
       id-token: write
@@ -67,7 +67,7 @@ jobs:
           token_format: 'access_token'
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
-      - name: Create Service ${{ vars.environment }} Declaration   
+      - name: Create Service ${{ inputs.environment }} Declaration   
         run: |-
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
           export SERVICE_NAME="${{ vars.service_name }}"
@@ -81,14 +81,14 @@ jobs:
           export DEPARTMENT_ID="${{ vars.department_id }}"
           export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
           export TCO_ID="${{ vars.tco_id }}"
-          export ENVIRONMENT="${{ vars.environment }}
-          envsubst < ./service-yaml/container-${{ vars.environment }}.yaml > container-prod.yaml
+          export ENVIRONMENT="${{ inputs.environment }}
+          envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-prod.yaml
         
-      - name: Deploy to ${{ vars.environment }} Cloud Run
+      - name: Deploy to ${{ inputs.environment }} Cloud Run
         id: deploy-prod
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}
           service: ${{ vars.service_name }}
           region: ${{ vars.region }}
-          metadata: container-${{ vars.environment }}.yaml 
+          metadata: container-${{ inputs.environment }}.yaml 

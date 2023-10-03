@@ -1,6 +1,10 @@
 on:
   workflow_call:
-   
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
     name: Lint
@@ -61,7 +65,7 @@ jobs:
     if: contains(fromJSON('["develop", "main"]'), github.ref_name)
     name: "Image Build & Push"
     runs-on: ubuntu-latest
-    environment: ${{ vars.environment }}
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
@@ -157,9 +161,9 @@ jobs:
           export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
           export TCO_ID="${{ vars.tco_id }}"
           export ENVIRONMENT="${{ vars.environment }}"
-          export NEW_REVISION_PERCENTAGE=${{ vars.new_revision_percentage }}
-          export EXISTING_REVISION=${{ vars.existing_revision }}
-          export EXISTING_REVISION_PERCENTAGE=${{ vars.existing_revision_percentage }}
+          export NEW_REVISION_PERCENTAGE=${{ inputs.new_revision_percentage }}
+          export EXISTING_REVISION=${{ inputs.existing_revision }}
+          export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
           envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
         
       - name: Deploy to ${{ vars.environment }} Cloud Run
