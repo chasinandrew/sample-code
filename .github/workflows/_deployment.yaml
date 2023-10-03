@@ -130,7 +130,7 @@ jobs:
       - name: Create Service ${{ inputs.environment }} Declaration   
         if: inputs.environment == 'dev' || inputs.environment == 'qa'
         run: |-
-          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
           export SERVICE_NAME="${{ vars.service_name }}"
           export PROJECT_ID="${{ vars.gcp_project_id }}"
           export REVISION_TAG="${{ github.sha }}"
@@ -148,7 +148,7 @@ jobs:
       - name: Create Service ${{ inputs.environment }} Declaration   
         if: inputs.environment == 'prod'
         run: |-
-          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
           export SERVICE_NAME="${{ vars.service_name }}"
           export PROJECT_ID="${{ vars.gcp_project_id }}"
           export REVISION_TAG="${{ vars.ref }}"
