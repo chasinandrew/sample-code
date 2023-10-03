@@ -40,22 +40,22 @@ jobs:
       uses: actions/checkout@v3
 
     # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        source-root: ${{ vars.code_directory }}
+    # - name: Initialize CodeQL
+    #   uses: github/codeql-action/init@v2
+    #   with:
+    #     languages: ${{ matrix.language }}
+    #     source-root: ${{ vars.code_directory }}
 
-    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-    #TODO: add if statement for dotnet and python
+    # # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
+    # # If this step fails, then you should remove it and run the build manually (see below)
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@v2
+    # #TODO: add if statement for dotnet and python
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
+    # - name: Perform CodeQL Analysis
+    #   uses: github/codeql-action/analyze@v2
+    #   with:
+    #     category: "/language:${{matrix.language}}"
 
   image-build-push: 
     if: contains(fromJSON('["develop", "main"]'), github.ref_name)
@@ -93,18 +93,17 @@ jobs:
           context: ${{ vars.code_directory }}
           push: true 
           tags: |
-            ${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}
-            ${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
       
-      #TODO: push fromo QA to PROD, build once 
       - name: Docker Push
         shell: bash
         run: |-
-          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}"
-          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   deploy: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && ${{ vars.environment }} != "prod" 
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name)
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
     environment: ${{ vars.environment }}
@@ -125,6 +124,7 @@ jobs:
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
 
       - name: Create Service ${{ vars.environment }} Declaration   
+        if: vars.environment == 'dev' || vars.environment == 'qa'
         run: |-
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}"
           export SERVICE_NAME="${{ vars.service_name }}"
@@ -140,9 +140,30 @@ jobs:
           export TCO_ID="${{ vars.tco_id }}"
           export ENVIRONMENT="${{ vars.environment }}"
           envsubst < ./service-yaml/container-${{ vars.environment }}.yaml > container-${{ vars.environment }}.yaml
+      
+      - name: Create Service ${{ vars.environment }} Declaration   
+        if: vars.environment == 'prod'
+        run: |-
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
+          export SERVICE_NAME="${{ vars.service_name }}"
+          export PROJECT_ID="${{ vars.gcp_project_id }}"
+          export REVISION_TAG="${{ vars.ref }}"
+          export CLOUD_RUN_SA="${{ vars.cloud_run_sa }}"
+          export REGION="${{ vars.region }}"
+          export APP_CODE="${{ vars.app_code }}"
+          export CLASSIFICATION="${{ vars.classification }}"
+          export COST_ID="${{ vars.cost_id }}"
+          export DEPARTMENT_ID="${{ vars.department_id }}"
+          export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
+          export TCO_ID="${{ vars.tco_id }}"
+          export ENVIRONMENT="${{ vars.environment }}"
+          export NEW_REVISION_PERCENTAGE=${{ vars.new_revision_percentage }}
+          export EXISTING_REVISION=${{ vars.existing_revision }}
+          export EXISTING_REVISION_PERCENTAGE=${{ vars.existing_revision_percentage }}
+          envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
         
       - name: Deploy to ${{ vars.environment }} Cloud Run
-        id: deploy-dev-qa
+        id: deploy-dev-qa-canary
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}

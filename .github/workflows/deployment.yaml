@@ -71,27 +71,10 @@ jobs:
   #PROD
   prod: 
     if: inputs.environment == 'prod' && github.event_name == 'workflow_dispatch'
-    uses: ./.github/workflows/_deployment-prod.yaml
+    uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
       contents: read
       actions: read
       security-events: write
-    with: 
-      artifact_registry_repo: blueprints #TODO: add artifact registry project id
-      cloud_run_sa: cloud-run-sa
-      code_directory: ./code/hello-python
-      environment: prod
-      gcp_project_id: hca-demo-prod
-      language: python
-      existing_revision: sample-service-fda0276dea649024885871536ed90f41a05cf42e
-      ref: ${{ github.sha }}
-      region: us-east4
-      service_name: sample-service
-      app_code: sample
-      classification: placeholder
-      cost_id: placeholder
-      department_id: placeholder
-      hca_project_id: placeholder
-      tco_id: placeholder
     secrets: inherit
