@@ -39,13 +39,13 @@ jobs:
           context: ${{ vars.code_directory }}
           push: true 
           tags: |
-            ${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}
-            ${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
 
       - name: Docker Push
         shell: bash
         run: |-
-          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
           docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   deploy-prod: 
@@ -71,7 +71,7 @@ jobs:
       
       - name: Create Service ${{ inputs.environment }} Declaration   
         run: |-
-          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
           export SERVICE_NAME="${{ vars.service_name }}"
           export PROJECT_ID="${{ vars.gcp_project_id }}"
           export REVISION_TAG="${{ vars.ref }}"
