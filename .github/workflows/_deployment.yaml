@@ -150,7 +150,7 @@ jobs:
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
       
       - name: Create Service ${{ inputs.environment }} Declaration   
-        if: github.event_name == 'workflow_dispatch'
+        if: inputs.environment == 'prod'
         run: |-
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
           export SERVICE_NAME="${{ vars.service_name }}"
@@ -182,6 +182,7 @@ jobs:
 
       - name: Deploy to ${{ inputs.environment }} Cloud Run
         id: deploy-canary
+        if: github.event == 'workflow_dispatch'
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}
