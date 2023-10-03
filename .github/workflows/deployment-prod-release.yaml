@@ -7,7 +7,7 @@ jobs:
     if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod" && github.event_name == 'release'
     name: "Image Build & Push"
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: prod
     permissions:
       id-token: write
       contents: read
