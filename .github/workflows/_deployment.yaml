@@ -146,26 +146,26 @@ jobs:
           export ENVIRONMENT="${{ inputs.environment }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
       
-      - name: Create Service prod Declaration   
-        if: inputs.environment == 'prod'
-        run: |-
-          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
-          export SERVICE_NAME="${{ vars.service_name }}"
-          export PROJECT_ID="${{ vars.gcp_project_id }}"
-          export REVISION_TAG="${{ vars.ref }}"
-          export CLOUD_RUN_SA="${{ vars.cloud_run_sa }}"
-          export REGION="${{ vars.region }}"
-          export APP_CODE="${{ vars.app_code }}"
-          export CLASSIFICATION="${{ vars.classification }}"
-          export COST_ID="${{ vars.cost_id }}"
-          export DEPARTMENT_ID="${{ vars.department_id }}"
-          export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
-          export TCO_ID="${{ vars.tco_id }}"
-          export ENVIRONMENT="${{ inputs.environment }}"
-          export NEW_REVISION_PERCENTAGE=${{ vars.service_name }}-${{ github.sha }}
-          export EXISTING_REVISION=${{ inputs.existing_revision }}
-          export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
-          envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
+      # - name: Create Service prod Declaration   
+      #   if: inputs.environment == 'prod'
+      #   run: |-
+      #     export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
+      #     export SERVICE_NAME="${{ vars.service_name }}"
+      #     export PROJECT_ID="${{ vars.gcp_project_id }}"
+      #     export REVISION_TAG="${{ vars.ref }}"
+      #     export CLOUD_RUN_SA="${{ vars.cloud_run_sa }}"
+      #     export REGION="${{ vars.region }}"
+      #     export APP_CODE="${{ vars.app_code }}"
+      #     export CLASSIFICATION="${{ vars.classification }}"
+      #     export COST_ID="${{ vars.cost_id }}"
+      #     export DEPARTMENT_ID="${{ vars.department_id }}"
+      #     export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
+      #     export TCO_ID="${{ vars.tco_id }}"
+      #     export ENVIRONMENT="${{ inputs.environment }}"
+      #     export NEW_REVISION_PERCENTAGE=${{ vars.service_name }}-${{ github.sha }}
+      #     export EXISTING_REVISION=${{ inputs.existing_revision }}
+      #     export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
+      #     envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
       
       - name: Deploy to ${{ inputs.environment }} Cloud Run
         id: deploy-dev-qa
@@ -177,12 +177,12 @@ jobs:
           region: ${{ vars.region }}
           metadata: container-${{ inputs.environment }}.yaml 
 
-      - name: Prod canary deployment to Cloud Run
-        id: deploy-canary
-        if: inputs.environment == 'prod' 
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          project_id: ${{ vars.gcp_project_id }}
-          service: ${{ vars.service_name }}
-          region: ${{ vars.region }}
-          metadata: container-canary.yaml 
+      # - name: Prod canary deployment to Cloud Run
+      #   id: deploy-canary
+      #   if: inputs.environment == 'prod' 
+      #   uses: google-github-actions/deploy-cloudrun@v0
+      #   with:
+      #     project_id: ${{ vars.gcp_project_id }}
+      #     service: ${{ vars.service_name }}
+      #     region: ${{ vars.region }}
+      #     metadata: container-canary.yaml 
