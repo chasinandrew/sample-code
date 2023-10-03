@@ -15,6 +15,7 @@ on:
         default: '10'
         description: New Cloud Run revision traffic percentage
         options: 
+          - 0 
           - 10
           - 25
           - 50
@@ -27,6 +28,7 @@ on:
         default: '90'
         description: Old Cloud Run revision traffic percentage
         options: 
+          - 0
           - 10
           - 25
           - 50
@@ -86,3 +88,4 @@ jobs:
           service: ${{ vars.service_name }}
           region: ${{ vars.region }}
           metadata: container-canary.yaml
+        #TODO: add revision tag url, do same thing on data tier (blue-green), test in parallel 
