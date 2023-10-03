@@ -16,7 +16,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    #TODO: add editor config for dotnet
+    #TODO: add editorconfig file for dotnet
     - name: PyLint 
       working-directory: ${{ vars.code_directory }}
       run: |
@@ -148,7 +148,7 @@ jobs:
 
       - name: Deploy to ${{ inputs.environment }} Cloud Run
         id: deploy-dev-qa
-        if: github.event == 'push' && (inputs.environment == 'qa' || inputs.environment == 'dev')
+        if: github.event == 'push' 
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}
