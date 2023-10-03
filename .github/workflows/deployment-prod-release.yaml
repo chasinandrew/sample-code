@@ -73,7 +73,7 @@ jobs:
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
           export SERVICE_NAME="${{ vars.service_name }}"
           export PROJECT_ID="${{ vars.gcp_project_id }}"
-          export REVISION_TAG="${{ vars.ref }}"
+          export REVISION_TAG="${{ github.sha }}"
           export CLOUD_RUN_SA="${{ vars.cloud_run_sa }}"
           export REGION="${{ vars.region }}"
           export APP_CODE="${{ vars.app_code }}"
