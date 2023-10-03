@@ -1,0 +1,94 @@
+on:
+  release:
+    types: [published]
+jobs:
+  image-build-push: 
+    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod" && github.event_name == 'release'
+    name: "Image Build & Push"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Google Authentication
+        id: auth
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
+          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
+
+      # Authenticate Docker to Google Cloud Artifact Registry
+      - name: Docker Authentication
+        id: docker-auth
+        uses: 'docker/login-action@v1'
+        with:
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+          registry: '${{ vars.region }}-docker.pkg.dev'
+
+      - name: Build and Tag
+        id: build-image
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ vars.code_directory }}
+          push: true 
+          tags: |
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
+
+      - name: Docker Push
+        shell: bash
+        run: |-
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
+
+  deploy-prod: 
+    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
+    name: "Cloud Run Deployment"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    needs: [image-build-push]
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Google Authentication
+        id: auth
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
+          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
+      - name: Create Service ${{ inputs.environment }} Declaration   
+        run: |-
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
+          export SERVICE_NAME="${{ vars.service_name }}"
+          export PROJECT_ID="${{ vars.gcp_project_id }}"
+          export REVISION_TAG="${{ vars.ref }}"
+          export CLOUD_RUN_SA="${{ vars.cloud_run_sa }}"
+          export REGION="${{ vars.region }}"
+          export APP_CODE="${{ vars.app_code }}"
+          export CLASSIFICATION="${{ vars.classification }}"
+          export COST_ID="${{ vars.cost_id }}"
+          export DEPARTMENT_ID="${{ vars.department_id }}"
+          export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
+          export TCO_ID="${{ vars.tco_id }}"
+          export ENVIRONMENT="${{ inputs.environment }}
+          envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-prod.yaml
+        
+      - name: Deploy to ${{ inputs.environment }} Cloud Run
+        id: deploy-prod
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          project_id: ${{ vars.gcp_project_id }}
+          service: ${{ vars.service_name }}
+          region: ${{ vars.region }}
+          metadata: container-${{ inputs.environment }}.yaml 

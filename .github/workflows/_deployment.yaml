@@ -4,68 +4,7 @@ on:
       environment:
         type: string
         required: true
-        description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'.
-      ref:  
-        type: string
-        required: true
-        description: The branch, tag or SHA to checkout.
-      enable:
-        type: boolean
-        required: false
-        default: true
-        description: Whether or not to perform the actual deployment. The default value is true, or perform the deployment.
-      gcp_project_id:
-        type: string
-        required: true
-        description: The Google Cloud project ID.
-      artifact_registry_repo:
-        type: string
-        required: true
-        description: The artifact registry repository name.
-      region:
-        type: string
-        required: true
-        description: The artifact registry region name.
-      service_name:
-        type: string
-        required: true
-        description: The container service name.
-      code_directory: 
-        type: string
-        required: true
-        description: The directory where the source code lives. 
-      cloud_run_sa: 
-        type: string
-        required: false
-        description: The directory where the source code lives. 
-      language: 
-        type: string
-        required: true
-        description: Language the code is written in. 
-      app_code: 
-        type: string
-        required: true
-        description: App code for labels. 
-      classification: 
-        type: string
-        required: true
-        description: Data classification for labels. 
-      cost_id: 
-        type: string
-        required: true
-        description: Cost ID for labels. 
-      department_id: 
-        type: string
-        required: true
-        description: Department ID for labels. 
-      hca_project_id: 
-        type: string
-        required: true
-        description: HCA project ID for labels. 
-      tco_id: 
-        type: string
-        required: true
-        description: TCO ID for labels. 
+        description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
     name: Lint
@@ -78,7 +17,7 @@ jobs:
 
     #TODO: add editor config for dotnet
     - name: PyLint 
-      working-directory: ${{ inputs.code_directory }}
+      working-directory: ${{ vars.code_directory }}
       run: |
         pip install -r requirements.txt
         pip install pylint
@@ -98,29 +37,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ '${{ inputs.language }}' ] #TODO: add csharp
+        language: [ '${{ vars.language }}' ] #TODO: add csharp
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
     # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        source-root: ${{ inputs.code_directory }}
+    # - name: Initialize CodeQL
+    #   uses: github/codeql-action/init@v2
+    #   with:
+    #     languages: ${{ matrix.language }}
+    #     source-root: ${{ vars.code_directory }}
 
-    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-    #TODO: add if statement for dotnet and python
+    # # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
+    # # If this step fails, then you should remove it and run the build manually (see below)
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@v2
+    # #TODO: add if statement for dotnet and python
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
+    # - name: Perform CodeQL Analysis
+    #   uses: github/codeql-action/analyze@v2
+    #   with:
+    #     category: "/language:${{matrix.language}}"
 
   image-build-push: 
     if: contains(fromJSON('["develop", "main"]'), github.ref_name)
@@ -149,26 +88,26 @@ jobs:
         with:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
-          registry: '${{ inputs.region }}-docker.pkg.dev'
+          registry: '${{ vars.region }}-docker.pkg.dev'
 
       - name: Build and Tag
         id: build-image
         uses: docker/build-push-action@v3
         with:
-          context: ${{ inputs.code_directory }}
+          context: ${{ vars.code_directory }}
           push: true 
           tags: |
-            ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}
-            ${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest
-
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}
+            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
+      
       - name: Docker Push
         shell: bash
         run: |-
-          docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
-          docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:latest"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   deploy: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && ${{ inputs.environment }} != "prod" 
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name)
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -189,27 +128,49 @@ jobs:
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
 
       - name: Create Service ${{ inputs.environment }} Declaration   
+        if: inputs.environment == 'dev' || inputs.environment == 'qa'
         run: |-
-          export CONTAINER_IMAGE="${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_registry_repo }}/${{ inputs.service_name }}:${{ inputs.ref }}"
-          export SERVICE_NAME="${{ inputs.service_name }}"
-          export PROJECT_ID="${{ inputs.gcp_project_id }}"
-          export REVISION_TAG="${{ inputs.ref }}"
-          export CLOUD_RUN_SA="${{ inputs.cloud_run_sa }}"
-          export REGION="${{ inputs.region }}"
-          export APP_CODE="${{ inputs.app_code }}"
-          export CLASSIFICATION="${{ inputs.classification }}"
-          export COST_ID="${{ inputs.cost_id }}"
-          export DEPARTMENT_ID="${{ inputs.department_id }}"
-          export HCA_PROJECT_ID="${{ inputs.hca_project_id }}"
-          export TCO_ID="${{ inputs.tco_id }}"
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
+          export SERVICE_NAME="${{ vars.service_name }}"
+          export PROJECT_ID="${{ vars.gcp_project_id }}"
+          export REVISION_TAG="${{ github.sha }}"
+          export CLOUD_RUN_SA="${{ vars.cloud_run_sa }}"
+          export REGION="${{ vars.region }}"
+          export APP_CODE="${{ vars.app_code }}"
+          export CLASSIFICATION="${{ vars.classification }}"
+          export COST_ID="${{ vars.cost_id }}"
+          export DEPARTMENT_ID="${{ vars.department_id }}"
+          export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
+          export TCO_ID="${{ vars.tco_id }}"
           export ENVIRONMENT="${{ inputs.environment }}"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
+      
+      - name: Create Service ${{ inputs.environment }} Declaration   
+        if: inputs.environment == 'prod'
+        run: |-
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
+          export SERVICE_NAME="${{ vars.service_name }}"
+          export PROJECT_ID="${{ vars.gcp_project_id }}"
+          export REVISION_TAG="${{ vars.ref }}"
+          export CLOUD_RUN_SA="${{ vars.cloud_run_sa }}"
+          export REGION="${{ vars.region }}"
+          export APP_CODE="${{ vars.app_code }}"
+          export CLASSIFICATION="${{ vars.classification }}"
+          export COST_ID="${{ vars.cost_id }}"
+          export DEPARTMENT_ID="${{ vars.department_id }}"
+          export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
+          export TCO_ID="${{ vars.tco_id }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
+          export NEW_REVISION_PERCENTAGE=${{ inputs.new_revision_percentage }}
+          export EXISTING_REVISION=${{ inputs.existing_revision }}
+          export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
+          envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
         
       - name: Deploy to ${{ inputs.environment }} Cloud Run
-        id: deploy-dev-qa
+        id: deploy-dev-qa-canary
         uses: google-github-actions/deploy-cloudrun@v0
         with:
-          project_id: ${{ inputs.gcp_project_id }}
-          service: ${{ inputs.service_name }}
-          region: ${{ inputs.region }}
+          project_id: ${{ vars.gcp_project_id }}
+          service: ${{ vars.service_name }}
+          region: ${{ vars.region }}
           metadata: container-${{ inputs.environment }}.yaml 

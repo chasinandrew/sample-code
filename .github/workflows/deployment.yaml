@@ -15,7 +15,7 @@ on:
       new_revision_percentage: 
         type: choice
         required: true
-        default: 10
+        default: '10'
         description: New Cloud Run revision traffic percentage
         options: 
           - "10"
@@ -27,7 +27,7 @@ on:
       old_revision_percentage: 
         type: choice
         required: true
-        default: 90
+        default: '90'
         description: Old Cloud Run revision traffic percentage
         options: 
           - "10"
@@ -36,6 +36,14 @@ on:
           - "75"
           - "90"
           - "100"
+      old_revision_name:
+        type: string
+        required: true
+        description: Old Cloud Run revision name. 
+      new_revision_name: 
+        type: string
+        required: true
+        description: New Cloud Run Revision name. 
 
 jobs: 
   #DEV
@@ -48,21 +56,7 @@ jobs:
       actions: read
       security-events: write
     with: 
-      artifact_registry_repo: blueprints
-      cloud_run_sa: cloud-run-sa
-      code_directory: ./code/hello-python
       environment: dev
-      gcp_project_id: hca-demo-dev
-      language: python
-      ref: ${{ github.sha }}
-      region: us-east4
-      service_name: sample-service
-      app_code: sample
-      classification: placeholder
-      cost_id: placeholder
-      department_id: placeholder
-      hca_project_id: placeholder
-      tco_id: placeholder
     secrets: inherit
   
   #QA
@@ -75,47 +69,18 @@ jobs:
       actions: read
       security-events: write
     with: 
-      artifact_registry_repo: blueprints
-      cloud_run_sa: cloud-run-sa
-      code_directory: ./code/hello-python
       environment: qa
-      gcp_project_id: hca-demo-qa
-      language: python
-      ref: ${{ github.sha }}
-      region: us-east4
-      service_name: sample-service
-      app_code: sample
-      classification: placeholder
-      cost_id: placeholder
-      department_id: placeholder
-      hca_project_id: placeholder
-      tco_id: placeholder
     secrets: inherit
 
   #PROD
   prod: 
     if: inputs.environment == 'prod' && github.event_name == 'workflow_dispatch'
-    uses: ./.github/workflows/_deployment-prod.yaml
+    uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
       contents: read
       actions: read
       security-events: write
     with: 
-      artifact_registry_repo: blueprints
-      cloud_run_sa: cloud-run-sa
-      code_directory: ./code/hello-python
       environment: prod
-      gcp_project_id: hca-demo-prod
-      language: python
-      existing_revision: sample-service-fda0276dea649024885871536ed90f41a05cf42e
-      ref: ${{ github.sha }}
-      region: us-east4
-      service_name: sample-service
-      app_code: sample
-      classification: placeholder
-      cost_id: placeholder
-      department_id: placeholder
-      hca_project_id: placeholder
-      tco_id: placeholder
     secrets: inherit
