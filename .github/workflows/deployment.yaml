@@ -40,10 +40,6 @@ on:
         type: string
         required: true
         description: Old Cloud Run revision name. 
-      new_revision_name: 
-        type: string
-        required: true
-        description: New Cloud Run Revision name. 
 
 jobs: 
   #DEV
