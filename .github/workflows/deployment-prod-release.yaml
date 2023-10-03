@@ -83,7 +83,7 @@ jobs:
           export DEPARTMENT_ID="${{ vars.department_id }}"
           export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
           export TCO_ID="${{ vars.tco_id }}"
-          export ENVIRONMENT="${{ inputs.environment }}
+          export ENVIRONMENT="prod"
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-prod.yaml
         
       - name: Deploy to ${{ inputs.environment }} Cloud Run
