@@ -45,14 +45,14 @@ jobs:
       - name: Docker Push
         shell: bash
         run: |-
-          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
-          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
+          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   deploy-prod: 
     if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: prod
     needs: [image-build-push]
     permissions:
       id-token: write
@@ -71,7 +71,7 @@ jobs:
       
       - name: Create Service ${{ inputs.environment }} Declaration   
         run: |-
-          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
+          export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
           export SERVICE_NAME="${{ vars.service_name }}"
           export PROJECT_ID="${{ vars.gcp_project_id }}"
           export REVISION_TAG="${{ vars.ref }}"
