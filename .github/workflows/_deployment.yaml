@@ -110,7 +110,7 @@ jobs:
     if: contains(fromJSON('["develop", "main"]'), github.ref_name)
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
-    environment: ${{ vars.environment }}
+    environment: ${{ inputs.environment }}
     needs: [image-build-push]
     permissions:
       id-token: write
@@ -127,8 +127,8 @@ jobs:
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
 
-      - name: Create Service ${{ vars.environment }} Declaration   
-        if: vars.environment == 'dev' || vars.environment == 'qa'
+      - name: Create Service ${{ inputs.environment }} Declaration   
+        if: inputs.environment == 'dev' || inputs.environment == 'qa'
         run: |-
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.ref }}"
           export SERVICE_NAME="${{ vars.service_name }}"
@@ -142,11 +142,11 @@ jobs:
           export DEPARTMENT_ID="${{ vars.department_id }}"
           export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
           export TCO_ID="${{ vars.tco_id }}"
-          export ENVIRONMENT="${{ vars.environment }}"
-          envsubst < ./service-yaml/container-${{ vars.environment }}.yaml > container-${{ vars.environment }}.yaml
+          export ENVIRONMENT="${{ inputs.environment }}"
+          envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
       
-      - name: Create Service ${{ vars.environment }} Declaration   
-        if: vars.environment == 'prod'
+      - name: Create Service ${{ inputs.environment }} Declaration   
+        if: inputs.environment == 'prod'
         run: |-
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.gcp_project_id }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ vars.ref }}"
           export SERVICE_NAME="${{ vars.service_name }}"
@@ -160,17 +160,17 @@ jobs:
           export DEPARTMENT_ID="${{ vars.department_id }}"
           export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
           export TCO_ID="${{ vars.tco_id }}"
-          export ENVIRONMENT="${{ vars.environment }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
           export NEW_REVISION_PERCENTAGE=${{ inputs.new_revision_percentage }}
           export EXISTING_REVISION=${{ inputs.existing_revision }}
           export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
           envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
         
-      - name: Deploy to ${{ vars.environment }} Cloud Run
+      - name: Deploy to ${{ inputs.environment }} Cloud Run
         id: deploy-dev-qa-canary
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}
           service: ${{ vars.service_name }}
           region: ${{ vars.region }}
-          metadata: container-${{ vars.environment }}.yaml 
+          metadata: container-${{ inputs.environment }}.yaml 
