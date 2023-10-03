@@ -4,7 +4,7 @@ on:
     types: [published]
 jobs:
   image-build-push: 
-    if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod" && github.event_name == 'release'
+    if: contains(fromJSON('["main"]'), github.ref_name)
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: prod
@@ -69,7 +69,7 @@ jobs:
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
       
-      - name: Create Service ${{ inputs.environment }} Declaration   
+      - name: Create prod Service Declaration   
         run: |-
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
           export SERVICE_NAME="${{ vars.service_name }}"
@@ -86,11 +86,11 @@ jobs:
           export ENVIRONMENT="prod"
           envsubst < ./service-yaml/container-prod.yaml > container-prod.yaml
         
-      - name: Deploy to ${{ inputs.environment }} Cloud Run
+      - name: Deploy to prod Cloud Run
         id: deploy-prod
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}
           service: ${{ vars.service_name }}
           region: ${{ vars.region }}
-          metadata: container-${{ inputs.environment }}.yaml 
+          metadata: container-prod.yaml 
