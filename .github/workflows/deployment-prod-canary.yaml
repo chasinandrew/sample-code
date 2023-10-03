@@ -1,3 +1,4 @@
+name: Canary Deployment to Cloud Run
 on: 
   workflow_dispatch: 
     inputs: 
@@ -20,7 +21,7 @@ on:
           - 75
           - 90
           - 100
-      old_revision_percentage: 
+      existing_revision_percentage: 
         type: choice
         required: true
         default: '90'
@@ -32,7 +33,7 @@ on:
           - 75
           - 90
           - 100
-      old_revision_name:
+      existing_revision_name:
         type: string
         required: true
         description: Old Cloud Run revision name. 
@@ -72,8 +73,8 @@ jobs:
           export HCA_PROJECT_ID="${{ vars.hca_project_id }}"
           export TCO_ID="${{ vars.tco_id }}"
           export ENVIRONMENT="${{ inputs.environment }}"
-          export NEW_REVISION_PERCENTAGE=${{ vars.service_name }}-${{ github.sha }}
-          export EXISTING_REVISION=${{ inputs.existing_revision }}
+          export NEW_REVISION_PERCENTAGE=${{ inputs.new_revision_percentage }}
+          export EXISTING_REVISION=${{ inputs.existing_revision_name }}
           export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
           envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
 

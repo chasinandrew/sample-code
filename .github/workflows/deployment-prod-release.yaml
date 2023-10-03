@@ -1,3 +1,4 @@
+name: Production Release to Cloud Run
 on:
   release:
     types: [published]
