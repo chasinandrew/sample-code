@@ -8,7 +8,7 @@ metadata:
 spec:
   template:
     metadata:      
-      name: ${SERVICE_NAME}-${REVISION_TAG} 
+      name: ${SERVICE_NAME}-${REVISION_TAG}-release
       annotations:
         run.googleapis.com/execution-environment: gen1
         autoscaling.knative.dev/minScale: '3'
