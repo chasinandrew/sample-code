@@ -150,7 +150,7 @@ jobs:
           envsubst < ./service-yaml/container-${{ inputs.environment }}.yaml > container-${{ inputs.environment }}.yaml
       
       - name: Create Service ${{ inputs.environment }} Declaration   
-        if: inputs.environment == 'prod'
+        if: github.event_name == 'workflow_dispatch'
         run: |-
           export CONTAINER_IMAGE="${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
           export SERVICE_NAME="${{ vars.service_name }}"
