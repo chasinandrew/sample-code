@@ -5,6 +5,15 @@ on:
         type: string
         required: true
         description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'
+      existing_revision_percentage:
+        type: string
+        required: true
+        description: Fix later
+      existing_revision:
+        type: string
+        required: true
+        description: Fix later
+    
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
     name: Lint
@@ -168,12 +177,22 @@ jobs:
           export EXISTING_REVISION=${{ inputs.existing_revision }}
           export EXISTING_REVISION_PERCENTAGE=${{ inputs.existing_revision_percentage }}
           envsubst < ./service-yaml/container-canary.yaml > container-canary.yaml
-        
+      
       - name: Deploy to ${{ inputs.environment }} Cloud Run
-        id: deploy-dev-qa-canary
+        id: deploy-dev-qa
+        if: github.event != 'workflow_dispatch'
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}
           service: ${{ vars.service_name }}
           region: ${{ vars.region }}
           metadata: container-${{ inputs.environment }}.yaml 
+
+      - name: Deploy to ${{ inputs.environment }} Cloud Run
+        id: deploy-canary
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          project_id: ${{ vars.gcp_project_id }}
+          service: ${{ vars.service_name }}
+          region: ${{ vars.region }}
+          metadata: container-canary.yaml 
