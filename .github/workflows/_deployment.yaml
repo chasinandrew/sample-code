@@ -5,15 +5,7 @@ on:
         type: string
         required: true
         description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'
-      existing_revision_percentage:
-        type: string
-        required: true
-        description: Fix later
-      existing_revision:
-        type: string
-        required: true
-        description: Fix later
-    
+
 jobs:
   lint: #TODO: add linter for csharp / dotnet 
     name: Lint
