@@ -63,7 +63,7 @@ jobs:
         category: "/language:${{matrix.language}}"
 
   image-build-push: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name)
+    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && github.event_name != 'workflow_dispatch'
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -84,7 +84,6 @@ jobs:
 
       # Authenticate Docker to Google Cloud Artifact Registry
       - name: Docker Authentication
-        if: github.event_name != 'workflow_dispatch'
         id: docker-auth
         uses: 'docker/login-action@v1'
         with:
@@ -93,7 +92,6 @@ jobs:
           registry: '${{ vars.region }}-docker.pkg.dev'
 
       - name: Build and Tag
-        if: github.event_name != 'workflow_dispatch'
         id: build-image
         uses: docker/build-push-action@v3
         with:
@@ -104,7 +102,6 @@ jobs:
             ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
       
       - name: Docker Push
-        if: github.event_name != 'workflow_dispatch'
         shell: bash
         run: |-
           docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
