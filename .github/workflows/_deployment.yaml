@@ -179,7 +179,7 @@ jobs:
 
       - name: Prod canary deployment to Cloud Run
         id: deploy-canary
-        if: inputs.environment == 'prod' && github.event_name == 'workflow_dispatch'
+        if: inputs.environment == 'prod' && (github.event_name != 'pull_request' || github.event_name != 'push')
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           project_id: ${{ vars.gcp_project_id }}
