@@ -21,7 +21,7 @@ spec:
         department_id: ${DEPARTMENT_ID}
         hca_project_id: ${HCA_PROJECT_ID}
         tco_id: ${TCO_ID}
-        app_environment: ${ENVIRONMENT}
+        app_environment: ${ENVIRONMENT} 
     spec:
       containerConcurrency: 80
       serviceAccountName: ${CLOUD_RUN_SA}
@@ -35,5 +35,7 @@ spec:
         - name: PROJECT_ID
           value: ${PROJECT_ID}
   traffic: 
-  - latestRevision: true
-    percent: 100
+  - revisionName: ${SERVICE_NAME}-${REVISION_TAG}
+    percent: ${NEW_REVISION_PERCENTAGE} 
+  - revisionName: ${EXISTING_REVISION}
+    percent: ${EXISTING_REVISION_PERCENTAGE}
