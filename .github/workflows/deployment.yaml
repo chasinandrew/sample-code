@@ -1,8 +1,9 @@
 name: Build and Deploy to Cloud Run
 on:
   pull_request:
-    branches: [develop, main]
+    types: [opened, reopened, synchronize]
   push:
+    branches: [develop, main]
 
 jobs: 
   #DEV
@@ -20,7 +21,7 @@ jobs:
   
   #QA
   qa: 
-    if: github.ref_name == 'main' && github.event_name == 'push'
+    if: github.ref_name == 'main'
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
