@@ -29,15 +29,7 @@ jobs:
           gcloud artifacts docker tags add \
           "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest" \
           "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.event.release.tag_name }}"
-  # deploy-prod: 
-  #   if: contains(fromJSON('["main"]'), github.ref_name) && ${{ inputs.environment }} == "prod"
-  #   name: "Cloud Run Deployment"
-  #   runs-on: ubuntu-latest
-  #   environment: prod
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   steps:
+
       - name: Checkout
         uses: actions/checkout@v3
 
