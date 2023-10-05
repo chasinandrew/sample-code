@@ -108,7 +108,7 @@ jobs:
           docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   deploy: 
-    if: github.event == 'push' 
+    if: github.event_name == 'push' 
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
