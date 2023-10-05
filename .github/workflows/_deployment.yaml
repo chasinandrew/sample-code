@@ -7,7 +7,8 @@ on:
         description: Name of the target deployment environment. Acceptable values are 'dev', 'qa', or 'prod'
 
 jobs:
-  lint: #TODO: add linter for csharp / dotnet 
+  lint: 
+    #TODO: add linter for csharp / dotnet 
     name: Lint
     if: github.event_name == 'pull_request'
     runs-on: 'ubuntu-latest'
@@ -16,8 +17,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    #TODO: add editorconfig file for dotnet
     - name: PyLint 
+      if: ${{ vars.language }} == 'python'
       working-directory: ${{ vars.code_directory }}
       run: |
         pip install -r requirements.txt
@@ -55,7 +56,6 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
-    #TODO: add if statement for dotnet and python
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
@@ -63,7 +63,7 @@ jobs:
         category: "/language:${{matrix.language}}"
 
   image-build-push: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name)
+    if: github.event_name == 'push'
     name: "Image Build & Push"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -108,7 +108,7 @@ jobs:
           docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   deploy: 
-    if: contains(fromJSON('["develop", "main"]'), github.ref_name) && github.event == 'push' 
+    if: github.event == 'push' 
     name: "Cloud Run Deployment"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
