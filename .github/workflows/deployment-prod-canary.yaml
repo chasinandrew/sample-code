@@ -14,7 +14,8 @@ on:
         required: true
         default: '10'
         description: New Cloud Run revision traffic percentage
-        options: 
+        options:
+          - 0 
           - 10
           - 25
           - 50
@@ -26,7 +27,8 @@ on:
         required: true
         default: '90'
         description: Old Cloud Run revision traffic percentage
-        options: 
+        options:
+          - 0 
           - 10
           - 25
           - 50
