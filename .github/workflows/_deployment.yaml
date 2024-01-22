@@ -92,6 +92,7 @@ jobs:
       - name: Cloud Scheduler Creation
         run: |-
             gcloud scheduler jobs update pubsub \
+            --location=us-east4
             --schedule="30 4 * * *" \
             --topic="test-pubsub" \
             --message-body="{\"field1\":\"value1\",\"field2\":\"value2\"}}"
