@@ -89,13 +89,20 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
           registry: '${{ vars.region }}-docker.pkg.dev'
+
+      - name: Setup Google Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with: 
+          version: '>= 363.0.0'
+
       - name: Cloud Scheduler Creation
         run: |-
-            gcloud scheduler jobs update pubsub myjob \
+            gcloud scheduler jobs create pubsub pipeline-submit-schedule \
             --location="us-east4" \
             --schedule="30 5 * * *" \
-            --topic="test-pubsub" \
-            --message-body="{\"field1\":\"value1\",\"field2\":\"value2\"}}"
+            --topic="pipeline-submission-topic" \
+            --message-body-from-file="pipeline.json"
+
       # - name: Build and Tag
       #   id: build-image
       #   uses: docker/build-push-action@v3

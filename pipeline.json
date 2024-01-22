@@ -1,0 +1,9 @@
+{ 
+ "bq_table": "hca-demo-dev.test_dataset.dry-beans", 
+ "model_directory": "gs://hca-demo-dev-dry-beans-dt-bucket/trained_models/2023-09-25 18:46:01.376735", 
+ "bigquery_dataset": "hca-demo-dataset", 
+ "project_id": "hca-demo-dev", 
+ "project_number": "647084706976", 
+ "region": "us-central1", 
+ "gs_pipeline_spec_path": "gs://hca-demo-dev-dry-beans-dt-bucket/pipeline_root/dry-beans-dt/pipeline_job.json" 
+}
