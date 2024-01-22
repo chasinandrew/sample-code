@@ -94,7 +94,6 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v2'
         with: 
           version: '>= 363.0.0'
-          project_id: ${{ vars.gcp_project_id }}
 
       - name: Cloud Scheduler Creation
         run: |-
@@ -102,7 +101,8 @@ jobs:
             --location="us-east4" \
             --schedule="* * * * *" \
             --topic="pipeline-submission-topic" \
-            --message-body-from-file="pipeline.json"
+            --message-body-from-file="pipeline.json" \
+            --project="${{ vars.gcp_project_id }}"
 
       # - name: Build and Tag
       #   id: build-image
