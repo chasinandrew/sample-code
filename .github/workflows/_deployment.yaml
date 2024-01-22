@@ -91,7 +91,7 @@ jobs:
           registry: '${{ vars.region }}-docker.pkg.dev'
       - name: Cloud Scheduler Creation
         run: |-
-            gcloud scheduler jobs update pubsub myjob \
+            gcloud scheduler jobs create pubsub myjob \
             --location=us-east4
             --schedule="30 4 * * *" \
             --topic="test-pubsub" \
