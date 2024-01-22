@@ -94,6 +94,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v2'
         with: 
           version: '>= 363.0.0'
+          project_id: ${{ vars.gcp_project_id }}
 
       - name: Cloud Scheduler Creation
         run: |-
