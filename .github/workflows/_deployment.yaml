@@ -93,7 +93,7 @@ jobs:
         run: |-
             gcloud scheduler jobs create pubsub myjob \
             --location="us-east4" \
-            --schedule="30 4 * * *" \
+            --schedule="30 5 * * *" \
             --topic="test-pubsub" \
             --message-body="{\"field1\":\"value1\",\"field2\":\"value2\"}}"
       # - name: Build and Tag
