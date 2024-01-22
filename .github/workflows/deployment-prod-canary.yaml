@@ -87,4 +87,3 @@ jobs:
           service: ${{ vars.service_name }}
           region: ${{ vars.region }}
           metadata: container-canary.yaml
-        #TODO: add revision tag url, do same thing on data tier (blue-green), test in parallel 

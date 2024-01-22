@@ -8,7 +8,6 @@ on:
 
 jobs:
   lint: 
-    #TODO: add linter for csharp / dotnet 
     name: Lint
     if: github.event_name == 'pull_request'
     runs-on: 'ubuntu-latest'
@@ -127,6 +126,13 @@ jobs:
           token_format: 'access_token'
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
+
+      - name: Cloud Scheduler Creation
+        run: |-
+          gcloud scheduler jobs update pubsub \
+          --schedule="30 4 * * *" \
+          --topic="test-pubsub" \
+          --message-body="{\"field1\":\"value1\",\"field2\":\"value2\"}}"
 
       - name: Create Service ${{ inputs.environment }} Declaration   
         run: |-
