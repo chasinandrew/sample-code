@@ -97,9 +97,9 @@ jobs:
 
       - name: Cloud Scheduler Creation
         run: |-
-            gcloud scheduler jobs create pubsub pipeline-submit-schedule \
+            gcloud scheduler jobs update pubsub pipeline-submit-schedule \
             --location="us-east4" \
-            --schedule="30 5 * * *" \
+            --schedule="* * * * *" \
             --topic="pipeline-submission-topic" \
             --message-body-from-file="pipeline.json"
 
