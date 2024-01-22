@@ -100,7 +100,7 @@ jobs:
             gcloud scheduler jobs create pubsub pipeline-submit-schedule \
             --location="us-east4" \
             --schedule="* * * * *" \
-            --topic="pipeline-submission-topic" \
+            --topic="projects/${{ vars.gcp_project_id }}/topics/pipeline-submission-topic" \
             --message-body-from-file="pipeline.json" \
             --project="${{ vars.gcp_project_id }}"
 
