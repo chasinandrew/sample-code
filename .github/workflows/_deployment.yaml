@@ -89,22 +89,27 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
           registry: '${{ vars.region }}-docker.pkg.dev'
-
-      - name: Build and Tag
-        id: build-image
-        uses: docker/build-push-action@v3
-        with:
-          context: ${{ vars.code_directory }}
-          push: true 
-          tags: |
-            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}
-            ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
-      
-      - name: Docker Push
-        shell: bash
+      - name: Cloud Scheduler Creation
         run: |-
-          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
-          docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
+            gcloud scheduler jobs update pubsub \
+            --schedule="30 4 * * *" \
+            --topic="test-pubsub" \
+            --message-body="{\"field1\":\"value1\",\"field2\":\"value2\"}}"
+      # - name: Build and Tag
+      #   id: build-image
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     context: ${{ vars.code_directory }}
+      #     push: true 
+      #     tags: |
+      #       ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}
+      #       ${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest
+      
+      # - name: Docker Push
+      #   shell: bash
+      #   run: |-
+      #     docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:${{ github.sha }}"
+      #     docker push "${{ vars.region }}-docker.pkg.dev/${{ vars.artifact_registry_project }}/${{ vars.artifact_registry_repo }}/${{ vars.service_name }}:latest"
 
   # deploy: 
   #   if: github.event_name == 'push' 
@@ -127,12 +132,12 @@ jobs:
   #         workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
   #         service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'     # e.g. - my-service-account@my-project.iam.gserviceaccount.com
 
-  #     - name: Cloud Scheduler Creation
-  #       run: |-
-  #         gcloud scheduler jobs update pubsub \
-  #         --schedule="30 4 * * *" \
-  #         --topic="test-pubsub" \
-  #         --message-body="{\"field1\":\"value1\",\"field2\":\"value2\"}}"
+      # - name: Cloud Scheduler Creation
+      #   run: |-
+      #     gcloud scheduler jobs update pubsub \
+      #     --schedule="30 4 * * *" \
+      #     --topic="test-pubsub" \
+      #     --message-body="{\"field1\":\"value1\",\"field2\":\"value2\"}}"
 
   #     - name: Create Service ${{ inputs.environment }} Declaration   
   #       run: |-
